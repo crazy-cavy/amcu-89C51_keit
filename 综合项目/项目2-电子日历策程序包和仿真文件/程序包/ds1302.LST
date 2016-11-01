@@ -1,0 +1,149 @@
+C51 COMPILER V8.02   DS1302                                                                11/03/2010 22:45:22 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DS1302
+OBJECT MODULE PLACED IN ds1302.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ds1302.c BROWSE DEBUG OBJECTEXTEND TABS(3)
+
+line level    source
+
+   1          
+   2          #include <reg52.h>
+   3          //#include "ds1302.h"
+   4          
+   5          #define uchar unsigned char
+   6          #define uint  unsigned int
+   7          
+   8          #define SECOND 0x80     //秒
+   9          #define MINUTE 0x82     //分鍾
+  10          #define HOUR   0x84     //小時
+  11          #define DAY    0x86     //天
+  12          #define MONTH  0x88     //月
+  13          #define WEEK   0x8a     //星期
+  14          #define YEAR   0x8c     //年
+  15          
+  16          sbit DS1302_RST=P3^0;
+  17          sbit DS1302_SCLK=P3^1;
+  18          sbit DS1302_IO=P3^2;
+  19             
+  20          typedef struct systime
+  21          {
+  22             uchar    cYear;
+  23             uchar cMon;
+  24             uchar cDay;
+  25             uchar cHour;
+  26             uchar cMin;
+  27             uchar cSec;
+  28             uchar cWeek;
+  29          }SYSTIME;
+  30                 
+  31          void DS1302_Write(uchar D)
+  32          {
+  33   1         uchar i; 
+  34   1         for(i=0;i<8;i++)
+  35   1         {  
+  36   2            DS1302_IO=D&0x01;
+  37   2            DS1302_SCLK=1;
+  38   2            DS1302_SCLK=0;
+  39   2            D=D>>1;           
+  40   2         }  
+  41   1      }
+  42          
+  43          uchar DS1302_Read()
+  44          {
+  45   1         uchar TempDat=0,i;
+  46   1         for(i=0;i<8;i++)
+  47   1         {  
+  48   2            TempDat>>=1;   
+  49   2            if(DS1302_IO) TempDat=TempDat|0x80;
+  50   2            DS1302_SCLK=1;
+  51   2            DS1302_SCLK=0;
+  52   2            
+  53   2         }  
+  54   1          return TempDat;
+  55   1      }
+C51 COMPILER V8.02   DS1302                                                                11/03/2010 22:45:22 PAGE 2   
+
+  56          
+  57          void WDS1302(uchar ucAddr, uchar ucDat)   
+  58          {
+  59   1          DS1302_RST = 0;
+  60   1          DS1302_SCLK = 0;
+  61   1          DS1302_RST = 1;
+  62   1          DS1302_Write(ucAddr);        // 地址，命令 
+  63   1          DS1302_Write(ucDat);         // 写1Byte数据
+  64   1          DS1302_SCLK = 1;
+  65   1          DS1302_RST = 0;
+  66   1      } 
+  67          
+  68          uchar RDS1302(uchar ucAddr)
+  69          {
+  70   1          uchar ucDat;
+  71   1          DS1302_RST = 0;
+  72   1          DS1302_SCLK = 0;
+  73   1          DS1302_RST = 1;
+  74   1          DS1302_Write(ucAddr);        // 地址，命令 
+  75   1          ucDat=DS1302_Read();       
+  76   1          DS1302_SCLK = 1;
+  77   1          DS1302_RST = 0;
+  78   1         return ucDat;
+  79   1      }
+  80          
+  81          void SetTime(SYSTIME sys)
+  82          {
+  83   1      
+  84   1          WDS1302(YEAR,sys.cYear); 
+  85   1         WDS1302(MONTH,sys.cMon&0x1f);
+  86   1         WDS1302(DAY,sys.cDay&0x3f);
+  87   1         WDS1302(HOUR,sys.cHour&0xbf);
+  88   1         WDS1302(MINUTE,sys.cMin&0x7f);
+  89   1         WDS1302(SECOND,sys.cSec&0x7f);   
+  90   1         WDS1302(WEEK,sys.cWeek&0x07);
+  91   1      
+  92   1      }
+  93          
+  94          void GetTime(SYSTIME *sys)
+  95          {
+  96   1         uchar uiTempDat;
+  97   1         uiTempDat=RDS1302(YEAR|0x01);         
+  98   1         (*sys).cYear=(uiTempDat>>4)*10+(uiTempDat&0x0f);
+  99   1      
+ 100   1      // uiTempDat=RDS1302(0x88|0x01);
+ 101   1      // (*sys).cMon=((uiTempDat&0x1f)>>4)*10+(uiTempDat&0x0f);
+ 102   1         uiTempDat=RDS1302(0x88|0x01);
+ 103   1         (*sys).cMon=((uiTempDat&0x1f)>>4)*10+(uiTempDat&0x0f);   
+ 104   1      
+ 105   1         uiTempDat=RDS1302(DAY|0x01);
+ 106   1         (*sys).cDay=((uiTempDat&0x3f)>>4)*10+(uiTempDat&0x0f);
+ 107   1      
+ 108   1         uiTempDat=RDS1302(HOUR|0x01);
+ 109   1         (*sys).cHour=((uiTempDat&0x3f)>>4)*10+(uiTempDat&0x0f);
+ 110   1      
+ 111   1         uiTempDat=RDS1302(MINUTE|0x01);
+ 112   1         sys->cMin=((uiTempDat&0x7f)>>4)*10+(uiTempDat&0x0f);
+ 113   1      
+ 114   1         uiTempDat=RDS1302(SECOND|0x01);
+ 115   1         sys->cSec=((uiTempDat&0x7f)>>4)*10+(uiTempDat&0x0f);
+ 116   1      
+ 117   1         uiTempDat=RDS1302(MONTH|0x01);
+C51 COMPILER V8.02   DS1302                                                                11/03/2010 22:45:22 PAGE 3   
+
+ 118   1         (*sys).cMon=uiTempDat&0x17;
+ 119   1      
+ 120   1         uiTempDat=RDS1302(WEEK|0x01);
+ 121   1         sys->cWeek=uiTempDat&0x07;
+ 122   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    317    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       7
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

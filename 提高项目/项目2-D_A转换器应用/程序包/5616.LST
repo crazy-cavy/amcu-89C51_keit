@@ -1,0 +1,96 @@
+C51 COMPILER V8.02   5616                                                                  08/30/2010 21:43:50 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 5616
+OBJECT MODULE PLACED IN 5616.OBJ
+COMPILER INVOKED BY: d:\Keil\C51\BIN\C51.EXE 5616.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg51.h>
+   2          #include<intrins.h>
+   3          #define uchar unsigned char
+   4          #define uint unsigned int 
+   5          uchar ge,shi,bai;
+   6          uchar tt;
+   7          uchar code tb[]={0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90}; 
+   8          uchar code bit_ser[]={0xff,0xdf,0xef,0xf7};   
+   9          sbit  DA = P1^5;
+  10          sbit CLK = P1^1;
+  11          sbit  CS = P1^6;
+  12          void timer0_init()                                                                       //T0µÄ³õÊ¼»¯º¯Êý
+  13          {
+  14   1              TMOD =0x01;
+  15   1              TL0=(65536-50000)%256;
+  16   1              TH0=(65536-50000)/256;
+  17   1              TR0=1;
+  18   1              ET0=1;
+  19   1              EA=1;
+  20   1      }
+  21          
+  22          void timer0_isr() interrupt 1                                            //T0µÄÖÐ¶Ï´¦Àíº¯Êý£¬ÓÃÓÚÏÔÊ¾Êä³öµÄµçÑ¹Öµ
+  23          {
+  24   1              TR0=0;
+  25   1              TL0=(65536-5000)%256;
+  26   1              TH0=(65536-5000)/256;
+  27   1              TR0=1;
+  28   1              tt++;
+  29   1              if(tt==4)
+  30   1              tt=1;
+  31   1              P0 = 0xff;
+  32   1              P2 = bit_ser[tt];
+  33   1              switch(tt)
+  34   1              {
+  35   2                      case 1 : P0=tb[ge];break;
+  36   2                      case 2 : P0=tb[shi];break;
+  37   2                      case 3 : P0=tb[bai]&0x7f;break;
+  38   2                      default : break;        
+  39   2              }
+  40   1      }
+  41          void TLC5615(uint dat)   //ÓÉÓÚTLC5615ÊÇÊ®Î»×ª»»£¬ËùÒÔÔÚÕâÀïÒª¶¨ÒåÒ»¸öÁ½×Ö½ÚµÄ±äÁ¿
+  42          {
+  43   1               uchar i;
+  44   1               dat<<=6;             //Á½¸ö×Ö½ÚÓÐÊ®ÁùÎ»£¬È¥µô¸ßÁùÎ»Ê£ÏÂÊ®Î»ÓÐÐ§Î»
+  45   1               CLK=0;
+  46   1               CS=0;                //³õÊ¼»¯
+  47   1               for(i=0;i<12;i++)  //¸ù¾ÝPDFÎÄµµ¿ÉÖª,ÒªËÍµÄÖ»ÓÐÊ®Î»Êýµ«ÊÇºóÃæÒª¸ú×Å¶à¼ÓÁ½Î»Áã²ÅÄÜ½«Ò»¸öÊý¾ÝËÍ³öÈ¥
+  48   1               {
+  49   2                        DA=(bit)(dat&0x8000); //µ±datÓë0x8000ÏàÓëÈ»ºóÇ¿ÖÆ×ª»»ºóÓÐÒ»Î»,ÕâÊ±Ö»¾ÍÖ»¿ÉÒÔÖ±½ÓËÍ¸øDA¶Ë½øÐÐ·¢ËÍ
+  50   2                        CLK=1;     //Ç°ÃæÒ»¾äÒà¿ÉÓÃDA=CYÀ´´úÌæ,µ«ºóÃæµÄË³ÐòÒªµ÷»»²ÅÐÐ
+  51   2                        dat<<=1;
+  52   2                        CLK=0;
+  53   2               }
+  54   1               CS=1;
+  55   1               CLK=0;       
+C51 COMPILER V8.02   5616                                                                  08/30/2010 21:43:50 PAGE 2   
+
+  56   1      }
+  57          void main()
+  58          {
+  59   1              uint a;
+  60   1              uint A_MONI=500;
+  61   1              timer0_init();
+  62   1              while(1)
+  63   1              {
+  64   2                      TLC5615(A_MONI);//×î´ó1023
+  65   2                      a=A_MONI*0.464;//450³ýÒÔ1024£¬»ù×¼µçÑ¹ÊÇ2.25V,Êä³öµÄ×î´óµçÑ¹ÊÇ2.25*2,½«4.5V·Ö³É1024µÈ·Ý£¬ËùÓÐÊä³öµÄµçÑ¹¾
+             -ÍÊÇA_MONI*450/1024
+  66   2                      ge=a%10;           //»ñÈ¡Êä³öµçÑ¹¸÷Î»µÄÖµ
+  67   2                      shi=a/10%10;
+  68   2                      bai=a/100;              
+  69   2              }
+  70   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    228    ----
+   CONSTANT SIZE    =     14    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

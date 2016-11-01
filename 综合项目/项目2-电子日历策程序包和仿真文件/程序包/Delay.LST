@@ -1,0 +1,12 @@
+C51 COMPILER V8.02   DELAY                                                                 06/24/2001 00:06:05 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DELAY
+OBJECT MODULE PLACED IN Delay.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Delay.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+*** ERROR C318 OF Delay.c: can't open file 'Delay.c'
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

@@ -1,0 +1,19 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+C:\Documents and Settings\Administrator\桌面\单片机原理与应用C程序设计光盘\单片机原理及应用多媒体课件（教师用）\项目集\基础项目\项目4-单片机的中断系统\程序包\外部中断.uv2
+Project File Date:  06/28/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling 外部中断.c...
+外部中断.C(14): error C141: syntax error near '}'
+Target not created
+Build target 'Target 1'
+compiling 外部中断.c...
+linking...
+Program Size: data=9.1 xdata=0 code=44
+creating hex file from "外部中断"...
+"外部中断" - 0 Error(s), 0 Warning(s).

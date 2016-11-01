@@ -1,0 +1,125 @@
+C51 COMPILER V8.17   123456                                                                05/07/2010 09:31:36 PAGE 1   
+
+
+C51 COMPILER V8.17, COMPILATION OF MODULE 123456
+OBJECT MODULE PLACED IN 123456.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE 123456.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg51.h>
+   2          #define uchar unsigned char
+   3          #define uint unsigned int 
+   4          uchar code FFW[8]={0x01,0x03,0x02,0x06,0x04,0x0c,0x08,0x09};//转动数组
+   5          uchar code REV[8]={0xf9,0xf8,0xfc,0xf4,0xf6,0xf2,0xf3,0xf1};
+   6          uchar key1_down,key2_down,key3_down,key1_flag,key2_flag,key3_flag;//变量定义
+   7          sbit key1 = P3^0;//按键定义
+   8          sbit key2 = P3^1;
+   9          sbit key3 = P3^2;
+  10          /************************按键程序****************************/
+  11          /****************按键延迟函数**********/
+  12          void delay()
+  13          {
+  14   1              uchar a,b;
+  15   1              for(a=0;a<25;a++)
+  16   1              for(b=0;b<255;b++);
+  17   1      }
+  18          void key_scan()
+  19          {
+  20   1              /************按键1*************/
+  21   1              if(key1 == 0)
+  22   1              {
+  23   2                      delay();
+  24   2                      if(key1 == 0)key1_down = 1;     
+  25   2              }
+  26   1              if(key1_down == 1 && key1 == 1)
+  27   1              {
+  28   2                      key1_flag = 1;
+  29   2                      key2_flag = 0;
+  30   2                      key3_flag = 0;
+  31   2                      key1_down = 0;  
+  32   2              }
+  33   1              /************按键2*************/
+  34   1              if(key2 == 0)
+  35   1              {
+  36   2                      delay();
+  37   2                      if(key2 == 0)key2_down = 1;     
+  38   2              }
+  39   1              if(key2_down == 1 && key2 == 1)
+  40   1              {
+  41   2                      key1_flag = 0;
+  42   2                      key2_flag = 1;
+  43   2                      key3_flag = 0;
+  44   2                      key2_down = 0;  
+  45   2              }
+  46   1              /************按键3*************/
+  47   1              if(key3 == 0)
+  48   1              {
+  49   2                      delay();
+  50   2                      if(key3 == 0)key3_down = 1;     
+  51   2              }
+  52   1              if(key3_down == 1 && key3 == 1)
+  53   1              {
+  54   2                      key1_flag = 0;
+  55   2                      key2_flag = 0;
+C51 COMPILER V8.17   123456                                                                05/07/2010 09:31:36 PAGE 2   
+
+  56   2                      key3_flag = 1;
+  57   2                      key3_down = 0;  
+  58   2              }
+  59   1      }
+  60          /****************转动延迟函数**********/
+  61          void delayB(uint t)
+  62          {                           
+  63   1         uchar k;
+  64   1         while(t--)
+  65   1         {
+  66   2          for(k=0; k<125; k++)
+  67   2          { }
+  68   2         }
+  69   1      }
+  70          /************************电机正转****************************/
+  71          void motor_ffw()
+  72          { 
+  73   1              uchar i;
+  74   1              for (i=0; i<8; i++)       //一个周期转30度
+  75   1          {
+  76   2              P1 = FFW[i];          //取数据
+  77   2              delayB(100);            //调节转速
+  78   2          }
+  79   1       }
+  80          /************************电机反转****************************/
+  81          void motor_rev()
+  82          {
+  83   1              uchar i;
+  84   1              for (i=0; i<8; i++)     //一个周期转30度
+  85   1          {
+  86   2              P1 = REV[i];          //取数据
+  87   2              delayB(100);            //调节转速
+  88   2          }
+  89   1      }
+  90          /************************主程序****************************/
+  91          main()
+  92          { 
+  93   1              while(1)
+  94   1          {  
+  95   2              key_scan();
+  96   2                      if(key1_flag == 1)motor_ffw();       //电机正转
+  97   2                  if(key2_flag == 1)motor_rev();              //电机反转
+  98   2              if(key3_flag == 1) P1 = 0x0f;                   //电机停止
+  99   2              }
+ 100   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    189    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

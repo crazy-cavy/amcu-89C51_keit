@@ -1,0 +1,201 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        08/30/2010  21:43:50  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE 5616.obj TO 5616
+
+
+MEMORY MODEL: SMALL WITH FLOATING POINT ARITHMETIC
+
+
+INPUT MODULES INCLUDED:
+  5616.obj (5616)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FPMUL)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FCAST)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?CASTF)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FPGETOPN)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL\C51\LIB\C51S.LIB (?C?UIDIV)
+  D:\KEIL\C51\LIB\C51S.LIB (?C?LNEG)
+
+
+LINK MAP OF MODULE:  5616 (5616)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0004H     UNIT         ?DT?5616
+            DATA    000CH     0002H     UNIT         _DATA_GROUP_
+            IDATA   000EH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     0228H     UNIT         ?C?LIB_CODE
+            CODE    0236H     0056H     UNIT         ?PR?MAIN?5616
+            CODE    028CH     0055H     UNIT         ?PR?TIMER0_ISR?5616
+            CODE    02E1H     0029H     UNIT         ?PR?_TLC5615?5616
+            CODE    030AH     0010H     UNIT         ?PR?TIMER0_INIT?5616
+            CODE    031AH     000EH     UNIT         ?CO?5616
+            CODE    0328H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   5616 (5616)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?PR?TIMER0_ISR?5616            -----    -----
+  +--> ?CO?5616
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?5616
+
+BL51 BANKED LINKER/LOCATER V6.00                                                      08/30/2010  21:43:50  PAGE 2
+
+
+?PR?MAIN?5616                  000CH    0002H
+  +--> ?PR?TIMER0_INIT?5616
+  +--> ?PR?_TLC5615?5616
+
+
+
+SYMBOL TABLE OF MODULE:  5616 (5616)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        5616
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  C:028CH         PUBLIC        timer0_isr
+  B:0090H.5       PUBLIC        DA
+  B:00A8H.7       PUBLIC        EA
+  C:02E1H         PUBLIC        _TLC5615
+  B:0090H.6       PUBLIC        CS
+  C:0236H         PUBLIC        main
+  D:0008H         PUBLIC        bai
+  D:0089H         PUBLIC        TMOD
+  D:0009H         PUBLIC        shi
+  B:00A8H.1       PUBLIC        ET0
+  D:000AH         PUBLIC        ge
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  C:031AH         PUBLIC        tb
+  B:0088H.4       PUBLIC        TR0
+  B:0090H.1       PUBLIC        CLK
+  D:000BH         PUBLIC        tt
+  C:030AH         PUBLIC        timer0_init
+  C:0324H         PUBLIC        bit_ser
+  -------         PROC          TIMER0_INIT
+  C:030AH         LINE#         12
+  C:030AH         LINE#         13
+  C:030AH         LINE#         14
+  C:030DH         LINE#         15
+  C:0310H         LINE#         16
+  C:0313H         LINE#         17
+  C:0315H         LINE#         18
+  C:0317H         LINE#         19
+  C:0319H         LINE#         20
+  -------         ENDPROC       TIMER0_INIT
+  -------         PROC          TIMER0_ISR
+  C:028CH         LINE#         22
+  C:0294H         LINE#         24
+  C:0296H         LINE#         25
+  C:0299H         LINE#         26
+  C:029CH         LINE#         27
+  C:029EH         LINE#         28
+  C:02A0H         LINE#         29
+  C:02A5H         LINE#         30
+  C:02A8H         LINE#         31
+  C:02ABH         LINE#         32
+BL51 BANKED LINKER/LOCATER V6.00                                                      08/30/2010  21:43:50  PAGE 3
+
+
+  C:02B3H         LINE#         33
+  C:02C0H         LINE#         34
+  C:02C0H         LINE#         35
+  C:02C4H         LINE#         36
+  C:02CEH         LINE#         37
+  C:02D8H         LINE#         38
+  C:02D8H         LINE#         39
+  C:02D8H         LINE#         40
+  -------         ENDPROC       TIMER0_ISR
+  -------         PROC          _TLC5615
+  D:0006H         SYMBOL        dat
+  -------         DO            
+  D:0005H         SYMBOL        i
+  -------         ENDDO         
+  C:02E1H         LINE#         41
+  C:02E1H         LINE#         42
+  C:02E1H         LINE#         44
+  C:02ECH         LINE#         45
+  C:02EEH         LINE#         46
+  C:02F0H         LINE#         47
+  C:02F2H         LINE#         48
+  C:02F2H         LINE#         49
+  C:02F6H         LINE#         50
+  C:02F8H         LINE#         51
+  C:02FFH         LINE#         52
+  C:0301H         LINE#         53
+  C:0305H         LINE#         54
+  C:0307H         LINE#         55
+  C:0309H         LINE#         56
+  -------         ENDPROC       _TLC5615
+  -------         PROC          MAIN
+  -------         DO            
+  D:0002H         SYMBOL        a
+  D:000CH         SYMBOL        A_MONI
+  -------         ENDDO         
+  C:0236H         LINE#         57
+  C:0236H         LINE#         58
+  C:0236H         LINE#         60
+  C:023CH         LINE#         61
+  C:023FH         LINE#         62
+  C:023FH         LINE#         63
+  C:023FH         LINE#         64
+  C:0246H         LINE#         65
+  C:0260H         LINE#         66
+  C:0269H         LINE#         67
+  C:027DH         LINE#         68
+  C:028AH         LINE#         69
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        5616
+
+  -------         MODULE        ?C?FPMUL
+  C:000EH         PUBLIC        ?C?FPMUL
+  -------         ENDMOD        ?C?FPMUL
+
+  -------         MODULE        ?C?FCAST
+  C:011EH         PUBLIC        ?C?FCASTC
+  C:0119H         PUBLIC        ?C?FCASTI
+BL51 BANKED LINKER/LOCATER V6.00                                                      08/30/2010  21:43:50  PAGE 4
+
+
+  C:0114H         PUBLIC        ?C?FCASTL
+  -------         ENDMOD        ?C?FCAST
+
+  -------         MODULE        ?C?CASTF
+  C:0152H         PUBLIC        ?C?CASTF
+  -------         ENDMOD        ?C?CASTF
+
+  -------         MODULE        ?C?UIDIV
+  C:01D3H         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
+
+  -------         MODULE        ?C?LNEG
+  C:0228H         PUBLIC        ?C?LNEG
+  -------         ENDMOD        ?C?LNEG
+
+Program Size: data=15.0 xdata=0 code=812
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

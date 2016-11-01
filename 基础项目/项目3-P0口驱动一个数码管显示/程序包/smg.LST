@@ -1,0 +1,60 @@
+C51 COMPILER V9.55   SMG                                                                   10/31/2016 03:23:03 PAGE 1   
+
+
+C51 COMPILER V9.55, COMPILATION OF MODULE SMG
+OBJECT MODULE PLACED IN smg.OBJ
+COMPILER INVOKED BY: H:\code\Microcomputer\software\keil5-MDK\C51\BIN\C51.EXE smg.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJEC
+                    -TEXTEND TABS(2)
+
+line level    source
+
+   1          #include<reg51.h>
+   2          code unsigned char seven_seg[18] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,
+             -0x79,0x71,0x40,0xff};
+   3          void delay (void)                          //时间延迟函数 
+   4          {              
+   5   1        unsigned char i,j;
+   6   1        for(i = 0;i < 255;i++)
+   7   1        for (j = 0;j < 255;j++);
+   8   1      }
+   9          void main (void)
+  10          {
+  11   1        unsigned char i;         
+  12   1        P0  =  0x81;        //P0^0 位选第一个数码管 P0^7打开锁存器
+  13   1        while (1)
+  14   1        { 
+  15   2          for  (i = 0; i < 17; i++)
+  16   2          {
+  17   3            P2 = seven_seg[i];        //输出0~9到共阴数码管
+  18   3            delay();delay();          //调用时间延迟函数delay
+  19   3          }
+  20   2        }
+  21   1      }
+  22          /***************也可以采用以下设计方法实现*********************/
+  23          /*void main (void)
+  24          {
+  25            unsigned char i;            
+  26            P0  =  0x81;        //P0^0 位选第一个数码管 P0^7打开锁存器
+  27            while (1)
+  28            { 
+  29              P2 = seven_seg[i];        ///输出0~9到共阴数码管
+  30              delay();delay();              //调用时间延迟函数delay       
+  31              i++;  
+  32              if(i >= 18)
+  33              i = 0;
+  34            }
+  35          }*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     37    ----
+   CONSTANT SIZE    =     18    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

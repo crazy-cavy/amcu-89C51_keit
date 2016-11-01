@@ -1,0 +1,134 @@
+C51 COMPILER V8.17   ºìÍ_½__ë                                                              09/12/2010 18:19:05 PAGE 1   
+
+
+C51 COMPILER V8.17, COMPILATION OF MODULE ºìÍ_½__ë
+OBJECT MODULE PLACED IN ºìÍâ½âÂë.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ºìÍâ½âÂë.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #define uchar unsigned char
+   3          #define uint unsigned int
+   4          uchar code bit_ser[]={0xfe,0xfd,0xfb,0xf7,0xef,0xdf}; 
+   5          uchar code seven_seg[] = {0xf9,0x8e,0xc0};      //1,f,0ÒÀ´Î±íÊ¾¸ßµçÆ½£¬Ðü¿Õ£¬µÍµçÆ½
+   6          uchar code address[]={1,1,1,1,1,1};     //´æ·ÅÔ¤ÉèµÄµØÖ·Âë¸ßµçÆ½Îª2£¬µÍµçÆ½Îª0£¬Ðü¿ÕÎª1
+   7          uchar disbuffer[6];        //Êý¾ÝÏÔÊ¾»º³åÇø
+   8          uchar DATEA[25];           //½ÓÊÕµÄÐÅÏ¢
+   9          uchar DATE[12];            //½âÂëµÃµ½µÄÊý¾Ý
+  10          bit dateflag;              //½ÓÊÕÊý¾ÝÊ±µÄ±ê¼Ç
+  11          char num,i,j;              //ÓÃÓÚ½ÓÊÕºÍÏÔÊ¾Ê±¼ÆÊý
+  12          sbit DATE_IN = P1^0;   //Êý¾ÝµÄ½ÓÊÕ¶Ë
+  13          //¶¨Ê±Æ÷³õÊ¼»¯º¯Êý
+  14          void Timer_init()
+  15          {
+  16   1              TMOD = 0x11;
+  17   1              TH0 = 0xFA;
+  18   1              TL0 = 0x00;
+  19   1              EA = 1;
+  20   1              ET0 = 1; 
+  21   1              TL1 = (65536-5000) % 256;
+  22   1              TH1 = (65536-5000) / 256;
+  23   1              ET1 = 1;
+  24   1              TR1 = 1;
+  25   1      }
+  26          //Timer1ÖÐ¶Ï´¦Àíº¯Êý£¬ÓÃÓÚÏÔÊ¾½ÓÊÕµ½µÄÊý¾Ý
+  27          void time1_interrupt() interrupt 3
+  28          {
+  29   1              TL1 = (65536-5000) % 256;
+  30   1              TH1 = (65536-5000) / 256;
+  31   1              P0 = 0xff;
+  32   1              P2 = bit_ser[i];
+  33   1              P0 = seven_seg[disbuffer[i]];
+  34   1              i ++;
+  35   1              if(i >= 6)
+  36   1                      i = 0;
+  37   1      }
+  38          //Timer0ÖÐ¶Ï´¦Àíº¯Êý
+  39          void timer0_interrupt() interrupt 1
+  40          {
+  41   1              if(dateflag)            //Èç¹ûdateflagÎª¸ß£¬ËµÃ÷ÊÇÐèÒª¼ì²âÊý¾ÝÁË£¬·ñÔòËµÃ÷ÊÇÍ¬²½Âë»òÎóÂë£¨ÖÜÆÚ¹ý³¤£©
+  42   1              {
+  43   2                      dateflag = 0;
+  44   2                      DATEA[num] = DATE_IN;
+  45   2                      num ++;
+  46   2                      TR0 = 0;
+  47   2                      TH0 = 0xFA;
+  48   2                      TL0 = 0x00;
+  49   2                      TR0 = 1;
+  50   2              }
+  51   1              else                     
+  52   1              {
+  53   2                      num = 0;
+  54   2              }
+  55   1      }
+C51 COMPILER V8.17   ºìÍ_½__ë                                                              09/12/2010 18:19:05 PAGE 2   
+
+  56          //Êý¾Ý½ÓÊÕº¯Êý
+  57          void jieshou_date()
+  58          {
+  59   1              if(!dateflag)
+  60   1              {
+  61   2                      TR0 = 0;
+  62   2                      TH0 = 0xFA;
+  63   2                      TL0 = 0x90;                                                                                                                                                                                                       
+  64   2                      TR0 = 1;
+  65   2                      dateflag = 1;                                   
+  66   2              }       
+  67   1      }
+  68          //´Ó½ÓÊÕµ½µÄÐÅÏ¢ÖÐÌáÈ¡Êý¾Ý
+  69          void huoqu_date()
+  70          {
+  71   1              for(j = 0;j < 12;j ++)  //½«½ÓÊÕµ½µÄ24Î»µçÆ½ÐÅºÅ×ª»»³ÉÊý¾Ý
+  72   1              {
+  73   2                      DATE[j] = DATEA[j + j] + DATEA[j + j + 1];
+  74   2                      if(DATE[j] && ! DATEA[j + j])    //Èç¹û½ÓÊÕµ½µÄÁ½Î»Êý¾ÝÊÇ0£¬1ËµÃ÷ÊÇÎóÂë
+  75   2                      {
+  76   3                              break;
+  77   3                      }
+  78   2              }
+  79   1              num = 0;
+  80   1              if(j == 12)
+  81   1              {
+  82   2                      if(DATE[0] == address[0] && DATE[1] == address[1]&& DATE[2] == address[2] &&
+  83   2                              DATE[3] == address[3] && DATE[4] == address[4] && DATE[5] == address[5])
+  84   2                      {                //Èç¹û½âÂë³öµÄµØÖ·ÂëºÍÔ¤ÉèµÄµØÖ·ÂëÏàÍ¬£¬¾Í½«½âÂëµÃµ½µÄÊý¾Ý·ÅÈëÏÔÊ¾»º³åÇø
+  85   3                              for(j = 0;j < 6; j++)
+  86   3                              {
+  87   4                                      disbuffer[j] = DATE[6 + j];
+  88   4                              }       
+  89   3                      }
+  90   2              }       
+  91   1      }
+  92          //Ö÷º¯Êý
+  93          void main()
+  94          {
+  95   1              Timer_init();
+  96   1              while(1)
+  97   1              {
+  98   2                      if(!DATE_IN)             //ËµÃ÷ÓÐÐÅºÅÊäÈë
+  99   2                      {
+ 100   3                              jieshou_date();  //½ÓÊÕÐÅÏ¢
+ 101   3                      } 
+ 102   2                      if(num >= 25)            //ËµÃ÷ÒÑ¾­½ÓÊÕµ½ÁËÒ»×éÍêÕûÊý¾Ý
+ 103   2                      {
+ 104   3                              huoqu_date();    //´Ó½ÓÊÕµÄÐÅÏ¢ÖÐÌáÈ¡Êý¾Ý                       
+ 105   3                      }                                       
+ 106   2              }
+ 107   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    328    ----
+   CONSTANT SIZE    =     15    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     46    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+C51 COMPILER V8.17   ºìÍ_½__ë                                                              09/12/2010 18:19:05 PAGE 3   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

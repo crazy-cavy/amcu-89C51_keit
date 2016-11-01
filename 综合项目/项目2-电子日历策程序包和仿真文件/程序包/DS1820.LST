@@ -1,0 +1,273 @@
+C51 COMPILER V8.08   DS1820                                                                07/26/2008 17:17:12 PAGE 1   
+
+
+C51 COMPILER V8.08, COMPILATION OF MODULE DS1820
+OBJECT MODULE PLACED IN DS1820.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE DS1820.C BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*#include <reg52.h>
+   2          #include <intrins.h>
+   3          
+   4          #define uchar unsigned  char 
+   5          #define uint  unsigned  int
+   6          
+   7          sbit DQ=P1^6;
+   8          uchar ucDat;
+   9          
+  10          void  Delay15(uchar n)
+  11           { 
+  12                  while(n)
+  13                  {       
+  14                          _nop_();
+  15                  _nop_();
+  16                  _nop_();
+  17                  _nop_();
+  18                  _nop_();
+  19                  _nop_();
+  20                  _nop_();
+  21                  _nop_();
+  22                  _nop_();
+  23                  _nop_();
+  24                          _nop_();
+  25                  _nop_();
+  26                  _nop_();
+  27                  _nop_();
+  28                  _nop_();
+  29                          n--;
+  30              }
+  31            }
+  32           //毫秒延时
+  33           void DelayHM(uchar n)
+  34            {
+  35                  uchar i,j;
+  36                  while(n--)
+  37                  {
+  38                          for(i=0;i<10;i++)
+  39                          for(j=0;j<100;j++);
+  40                  }
+  41            }              
+  42          
+  43          //该函数返回为0，表示有DS1820，否则没有
+  44          bit Reset(void) 
+  45           { 
+  46             bit bErr;
+  47             DQ=1;
+  48             _nop_();
+  49             DQ=0;
+  50             Delay15(40);
+  51             DQ=1;
+  52             Delay15(3);
+  53             bErr=DQ;
+  54             Delay15(14);
+  55             return(bErr);
+C51 COMPILER V8.08   DS1820                                                                07/26/2008 17:17:12 PAGE 2   
+
+  56           }
+  57          
+  58          void WrByte(uchar ucDat)
+  59           { 
+  60             uchar i;
+  61             for(i=8;i>0;i--)
+  62               { 
+  63                     if(ucDat & 0x01)
+  64                     {
+  65                                  DQ=0;
+  66                          _nop_();
+  67                                  _nop_();
+  68                                  _nop_();
+  69                                  DQ=1;
+  70                     }
+  71                     else
+  72                     {
+  73                                  DQ=0;
+  74                          _nop_();
+  75                                  _nop_();
+  76                                  _nop_();
+  77                     }
+  78                     Delay15(2);
+  79                 DQ=1;
+  80                     ucDat=ucDat>>1;
+  81                }
+  82           }
+  83          
+  84           uchar  RdByte(void)
+  85            {  
+  86                   uchar i;
+  87               ucDat=0;
+  88               for(i=8;i>0;i--)
+  89               {  
+  90                          ucDat=ucDat>>1;
+  91                          DQ=0;
+  92                          _nop_();
+  93                  DQ=1;
+  94                  Delay15(1);
+  95                          if(DQ) ucDat|=0x80;
+  96                  //dat7=DQ;
+  97                }
+  98               return(ucDat);
+  99            }    
+ 100             
+ 101          void Convert(void)
+ 102           { 
+ 103             bit bErr;
+ 104             bErr=Reset();
+ 105             WrByte(0xcc);  //跳过多传感器识别
+ 106             WrByte(0x44);  //启动温度转换
+ 107           }
+ 108           
+ 109          int Readt(void)
+ 110           {  
+ 111                  uchar h,l;
+ 112              bit bErr;
+ 113              bErr=Reset();
+ 114              WrByte(0xcc); //跳过多传感器识别
+ 115              WrByte(0xbe); //读暂存器
+ 116              l=RdByte(); //温度低位
+ 117              h=RdByte(); //温度高位
+C51 COMPILER V8.08   DS1820                                                                07/26/2008 17:17:12 PAGE 3   
+
+ 118              
+ 119              return(h*256+l);
+ 120           }               */
+ 121          
+ 122          #define uchar unsigned  char 
+ 123          #define uint  unsigned  int
+ 124          #include <reg51.h>
+ 125          #include <intrins.h>
+ 126          
+ 127          
+ 128          extern uchar dbuf[4];
+ 129          
+ 130          sbit DQ=P1^6;
+ 131          bdata  uchar dat;
+ 132          sbit   dat0=dat^0;
+ 133          sbit   dat7=dat^7;
+ 134          
+ 135          //uchar code segtab[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0x88,0x83,0xc6,0xa1,0x86,0x8e,0x8
+             -9,0x8c};
+ 136          uchar dbuf[4]={0,0,0,0};// 显示缓存
+ 137          
+ 138          
+ 139          
+ 140          void  Delay15(uchar n)
+ 141           { do {
+ 142   2              _nop_();
+ 143   2              _nop_();
+ 144   2              _nop_();
+ 145   2              _nop_();
+ 146   2              _nop_();
+ 147   2              _nop_();
+ 148   2              _nop_();
+ 149   2              _nop_();
+ 150   2              _nop_();
+ 151   2              _nop_();
+ 152   2                      n--;
+ 153   2              }while(n);
+ 154   1        }
+ 155          //2*x+5
+ 156          void Delay_Xus(uchar x)         //x取值1～255；
+ 157          {
+ 158   1              while(--x);
+ 159   1      }
+ 160          
+ 161          //该函数返回为0，表示有DS1820，否则没有
+ 162          bit Reset(void) 
+ 163           { bit err;
+ 164   1         DQ=0;
+ 165   1         Delay15(40);
+ 166   1         DQ=1;
+ 167   1         Delay15(6);
+ 168   1         err=DQ;
+ 169   1         Delay15(18);
+ 170   1         return(err);
+ 171   1       }
+ 172          
+ 173          void WrByte(uchar d)
+ 174           { uchar i;
+ 175   1         dat=d;
+ 176   1         for(i=8;i>0;i--)
+ 177   1           { DQ=0;
+ 178   2             Delay15(1);
+C51 COMPILER V8.08   DS1820                                                                07/26/2008 17:17:12 PAGE 4   
+
+ 179   2                 DQ=dat0;
+ 180   2                 dat=dat>>1;
+ 181   2                 Delay15(1);
+ 182   2             DQ=1;
+ 183   2            }
+ 184   1       }
+ 185          
+ 186          /* uchar  RdByte(void)
+ 187            {  uchar i;
+ 188               dat=0;
+ 189               for(i=8;i>0;i--)
+ 190               {  dat=dat>>1;
+ 191                          DQ=0;
+ 192                          _nop_();
+ 193                  DQ=1;
+ 194                  Delay15(1);
+ 195                  dat7=DQ;
+ 196                }
+ 197               return(dat);
+ 198            }              */
+ 199          
+ 200          uchar RdByte(void)
+ 201          {
+ 202   1              uchar i;
+ 203   1              uchar tmp = 0;
+ 204   1              DQ = 1;                                                 //准备读；
+ 205   1              _nop_();
+ 206   1              for(i=0;i<8;i++)
+ 207   1              {
+ 208   2                      tmp >>= 1;                              //低位先发；
+ 209   2                      DQ = 0;                                         //Read init；
+ 210   2                      _nop_();                                        //2ms；
+ 211   2                      DQ = 1;                                         //必须写1，否则读出来的将是不预期的数据；
+ 212   2                      Delay_Xus(2);                   //延时9us；
+ 213   2                      _nop_();
+ 214   2                      if(DQ)                                          //在12us处读取数据；
+ 215   2                              tmp |= 0x80;
+ 216   2                      Delay_Xus(2);           //延时55us；
+ 217   2                      DQ = 1;                                         //恢复One Wire Bus；
+ 218   2                      _nop_();;
+ 219   2              }
+ 220   1              return tmp;     
+ 221   1      } 
+ 222          
+ 223          void Convert(void)
+ 224           { bit err;
+ 225   1         err=Reset();
+ 226   1         WrByte(0xcc);  //跳过多传感器识别
+ 227   1         WrByte(0x44);  //启动温度转换
+ 228   1       }
+ 229           
+ 230          int Readt(void)
+ 231           {  uchar h,l;
+ 232   1          bit err;
+ 233   1          err=Reset();
+ 234   1          WrByte(0xcc); //跳过多传感器识别
+ 235   1          WrByte(0xbe); //读暂存器
+ 236   1          l=RdByte(); //温度低位
+ 237   1          h=RdByte(); //温度高位
+ 238   1          
+ 239   1         // return(h*256+l);
+ 240   1              return l;
+C51 COMPILER V8.08   DS1820                                                                07/26/2008 17:17:12 PAGE 5   
+
+ 241   1       }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    160    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      5       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       3
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,121 @@
+#include<reg51.h>
+
+#define uchar unsigned char
+
+sbit rtc_clk=P1^0;
+sbit rtc_data=P1^1;
+sbit rtc_rst=P1^2;
+
+sbit a0=ACC^0;
+sbit a7=ACC^7;
+
+void write_rtc(uchar date)
+{
+	uchar i;
+	ACC=date;
+	for(i=0;i<8;i++)
+		{
+			rtc_data=a0;
+			rtc_clk=1;
+			rtc_clk=0;
+			ACC=ACC>>1;	
+		}
+}
+
+uchar read_rtc()
+{
+	uchar i;
+	for(i=0;i<8;i++)
+		{
+			ACC=ACC>>1;
+			a7=rtc_data;
+			rtc_clk=1;
+			rtc_clk=0;		
+		}
+	return ACC;	
+}
+
+void write1302(uchar address,uchar date)
+{
+	rtc_rst=0;
+	rtc_clk=0;
+	rtc_rst=1;
+	write_rtc(address);
+	write_rtc(date);
+	rtc_clk=1;
+	rtc_rst=0;
+}
+uchar read1302(uchar address)
+{
+	uchar temp;
+	rtc_rst=0;
+	rtc_clk=0;
+	rtc_rst=1;
+	write_rtc(address);
+	temp=read_rtc();
+	rtc_clk=1;
+	rtc_rst=0;
+	return temp;
+}
+void init1302()
+{
+	write1302(0x8e,0x00);	
+	write1302(0x90,0xa5);
+	write1302(0x80,0x56);	
+	write1302(0x82,0x34);
+	write1302(0x84,0x12);	
+	write1302(0x86,0x25);
+	write1302(0x88,0x08);	
+	write1302(0x8a,0x35);
+	write1302(0x8c,0x10);	
+	write1302(0x8e,0x80);
+}
+void get_time()
+{
+	uchar d;
+	d=read1302(0x81);
+	time1[0]=d&0x0f;
+	time1[1]=(d>>4)&0x0f;	
+	d=read1302(0x83);
+	time1[2]=d&0x0f;
+	time1[3]=(d>>4)&0x0f;	
+	d=read1302(0x85);
+	time1[4]=d&0x0f;
+	time1[5]=(d>>4)&0x0f;	
+}
+void time0() interrupt 1
+{
+	TR0=0;
+	TH0=(65536-5000)/256;	
+	TL0=(65536-5000)%256;
+	TR0=1;
+	tt++;
+	if(tt==100)
+	{
+		tt=0;
+		dot=!dot;	
+	}
+	get_time();
+	P0=0xff;
+	P2=bit_select[i];
+	P0=seven_tab[time1[i]];
+	i++;
+	if(i==6)i=0;			
+}
+void initmcu()
+{
+	TMOD=0x01;
+	TH0=(65536-5000)/256;	
+	TL0=(65536-5000)%256;
+	TR0=1;
+	ET0=1;
+	EA=1;
+}
+void main()
+{
+	while(1)
+		{
+			
+		}
+	
+}

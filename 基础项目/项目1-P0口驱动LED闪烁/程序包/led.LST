@@ -1,0 +1,41 @@
+C51 COMPILER V9.55   LED                                                                   10/31/2016 01:02:43 PAGE 1   
+
+
+C51 COMPILER V9.55, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: H:\code\Microcomputer\software\keil5-MDK\C51\BIN\C51.EXE led.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJEC
+                    -TEXTEND TABS(2)
+
+line level    source
+
+   1          #include<reg51.h>                    //包含头文件               
+   2          sbit led1 = P0^0;     //定义P0口的第一位 为led
+   3          void delay(unsigned char x)          //延时函数
+   4          {
+   5   1        unsigned char i,j;
+   6   1        for(i = 0;i < x;i++)
+   7   1        for(j = 0;j < 200;j++);
+   8   1      }
+   9          void main(void)                     //主函数
+  10          {
+  11   1        P0 = 0xFF;              //让P0输出高电平，8个led全灭
+  12   1        while(1)                        //程序无限循环
+  13   1        {
+  14   2          led1=~led1;
+  15   2          delay(250);                 //实参不能大于255，因为形参x为char 
+  16   2        }
+  17   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     29    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

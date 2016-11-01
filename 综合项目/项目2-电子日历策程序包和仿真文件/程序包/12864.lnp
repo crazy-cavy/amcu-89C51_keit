@@ -1,0 +1,6 @@
+"ds1302.obj",
+"main.obj",
+"One-Wire.obj",
+"lunar.obj" 
+TO "12864" 
+RAMSIZE(256) 

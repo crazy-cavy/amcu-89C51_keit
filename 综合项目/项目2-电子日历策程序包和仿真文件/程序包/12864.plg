@@ -1,0 +1,27 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+C:\Documents and Settings\Administrator\桌面\项目（教师用）\综合项目\电子日历策程序包和仿真文件\程序包\12864.uv2
+Project File Date:  05/19/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling ds1302.c...
+compiling main.c...
+12864.H(587): warning C275: expression with possibly no effect
+12864.H(607): warning C275: expression with possibly no effect
+12864.H(627): warning C275: expression with possibly no effect
+12864.H(647): warning C275: expression with possibly no effect
+compiling One-Wire.C...
+compiling lunar.c...
+LUNAR.C(348): warning C275: expression with possibly no effect
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DELAYMS?MAIN
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_RECTAREA?MAIN
+Program Size: data=64.3 xdata=0 code=13423
+creating hex file from "12864"...
+"12864" - 0 Error(s), 7 Warning(s).

@@ -1,0 +1,58 @@
+<html>
+<body>
+<pre>
+<h1>µVision3 Build Log</h1>
+<h2>Project:</h2>
+E:\ÏîÄ¿8-µç×Ó±í³ÌĞòÉè¼Æ0\ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾\ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.uv2
+Project File Date:  11/03/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+Target has no object modules
+Target not created
+Build target 'Target 1'
+compiling ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.c...
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(120): warning C206: 'display': missing function-prototype
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(166): error C231: 'display': redefinition
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(194): error C231: 'display': redefinition
+Target not created
+Build target 'Target 1'
+compiling ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.c...
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(120): warning C206: 'display': missing function-prototype
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(166): error C231: 'display': redefinition
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(194): error C231: 'display': redefinition
+Target not created
+Build target 'Target 1'
+compiling ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.c...
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(120): warning C206: 'display': missing function-prototype
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(166): error C231: 'display': redefinition
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(194): error C231: 'display': redefinition
+Target not created
+Build target 'Target 1'
+compiling ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.c...
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(120): warning C206: 'display': missing function-prototype
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(166): error C231: 'display': redefinition
+ÊÂë¹Ü¶¯Ì¬ÏÔÊ¾.C(194): error C231: 'display': redefinition
+Target not created
+Build target 'Target 1'
+compiling ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.c...
+linking...
+Program Size: data=30.0 xdata=0 code=1042
+"ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾" - 0 Error(s), 0 Warning(s).
+Build target 'Target 1'
+compiling ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.c...
+linking...
+Program Size: data=30.0 xdata=0 code=1042
+"ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾" - 0 Error(s), 0 Warning(s).
+Build target 'Target 1'
+compiling ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.c...
+linking...
+Program Size: data=30.0 xdata=0 code=1042
+creating hex file from "ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾"...
+"ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾" - 0 Error(s), 0 Warning(s).
+Build target 'Target 1'
+compiling ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾.c...
+linking...
+Program Size: data=30.0 xdata=0 code=1042
+creating hex file from "ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾"...
+"ÊıÂë¹Ü¶¯Ì¬ÏÔÊ¾" - 0 Error(s), 0 Warning(s).

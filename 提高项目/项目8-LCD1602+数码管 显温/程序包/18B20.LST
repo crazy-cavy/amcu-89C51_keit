@@ -1,0 +1,129 @@
+C51 COMPILER V9.55   18B20                                                                 10/31/2016 12:44:27 PAGE 1   
+
+
+C51 COMPILER V9.55, COMPILATION OF MODULE 18B20
+OBJECT MODULE PLACED IN 18B20.OBJ
+COMPILER INVOKED BY: H:\code\Microcomputer\software\keil5-MDK\C51\BIN\C51.EXE 18B20.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJ
+                    -ECTEXTEND TABS(2)
+
+line level    source
+
+   1          /*********************************************************************/
+   2          //读取DS18B20温度，通过数码管显示，在温度超过35度时继电器吸合                                           
+   3          /*********************************************************************/
+   4          #include<reg51.h>   
+   5          #define uchar unsigned char 
+   6          #define uint unsigned int
+   7          uchar a,b,c;
+   8          sbit DQ = P1^0;
+   9          void delay(uint x)
+  10          {
+  11   1        while(x--); 
+  12   1       
+  13   1      }
+  14          void Init_DS18B20(void)
+  15          {
+  16   1        unsigned char x=0;
+  17   1        DQ = 1;         //DQ复位
+  18   1        delay(8);       //稍做延时
+  19   1        DQ = 0;         //单片机将DQ拉低
+  20   1        delay(80);    //精确延时 大于 480us
+  21   1        DQ = 1;       //拉高总线
+  22   1        delay(14);
+  23   1        x=DQ;           //稍做延时后 如果x=0则初始化成功 x=1则初始化失败
+  24   1        delay(20);
+  25   1      }
+  26          /******************************从18B20中读一个字节****************************/
+  27          uchar Read_OneChar(void)
+  28          {
+  29   1        uchar i = 0;
+  30   1        uchar dat = 0;
+  31   1        for (i=8;i>0;i--)
+  32   1        {
+  33   2            DQ = 0;          // 给脉冲信号
+  34   2            dat >>= 1;
+  35   2            DQ = 1;          // 给脉冲信号
+  36   2            if(DQ)
+  37   2            dat |= 0x80;
+  38   2            delay(8);
+  39   2        }
+  40   1        return(dat);
+  41   1      }
+  42          /******************************向18B20中写一个字节****************************/
+  43          void Write_OneChar(uchar dat)
+  44          {
+  45   1        uchar i=0;
+  46   1        for (i=8; i>0; i--)
+  47   1        {
+  48   2          DQ = 0;
+  49   2          DQ = dat&0x01;
+  50   2          delay(10);
+  51   2          DQ = 1;
+  52   2          dat >>= 1;
+  53   2        }
+  54   1        delay(8);
+C51 COMPILER V9.55   18B20                                                                 10/31/2016 12:44:27 PAGE 2   
+
+  55   1      }
+  56          /***********************************读取温度**********************************/
+  57          uchar Read_Temperature(void)
+  58          {
+  59   1        uchar i = 0,t = 0;
+  60   1        Init_DS18B20();
+  61   1        Write_OneChar(0xcc);  // 跳过读序号列号的操作
+  62   1        Write_OneChar(0x44);  // 启动温度转换
+  63   1        Init_DS18B20();
+  64   1        Write_OneChar(0xcc);  //跳过读序号列号的操作
+  65   1        Write_OneChar(0xbe);  //读取温度寄存器等（共可读9个寄存器） 前两个就是温度
+  66   1        a = Read_OneChar();     //读取温度值低位
+  67   1        b = Read_OneChar();     //读取温度值高位
+  68   1        c = 0x0f & a;     //得到小数部分
+  69   1        a = a >> 4;       //低位右移4位
+  70   1        b = b << 4;             //高位左移4位
+  71   1          t = a | b;        //得到8位温度的整数部分，最高为符号位
+  72   1        return(t);
+  73   1      }
+  74          
+  75          
+  76          void write_temprom(uchar temp_up_set,uchar temp_down_set )//保存温度上下限temp_up_set,temp_down_set;
+  77          {
+  78   1        Init_DS18B20();
+  79   1        Write_OneChar(0xcc);          //跳过读序号列号的操作
+  80   1        Write_OneChar(0x4e);        //写准备 
+  81   1        Write_OneChar(temp_up_set);     //向18B20的暂存写上限    
+  82   1        Write_OneChar(temp_down_set);   //向18B20的暂存写下限
+  83   1        Write_OneChar(0x7f);
+  84   1        Init_DS18B20();
+  85   1        Write_OneChar(0xcc); 
+  86   1        Write_OneChar(0x48);        //向18B20的rom中写数据
+  87   1        Init_DS18B20();
+  88   1        Write_OneChar(0xcc);
+  89   1        Write_OneChar(0xb8);
+  90   1        ;;
+  91   1      }
+  92          uchar  temp_up,temp_down;//读出存储在DS18B20内的温度上下限值
+  93          void read_temprom(void)//读取温度温度上下限
+  94          {
+  95   1          uchar i;
+  96   1        Init_DS18B20();
+  97   1        Write_OneChar(0xcc);              // 跳过读序号列号的操作         
+  98   1        Write_OneChar(0xbe);        // 读取温度寄存器等（共可读9个寄存器） 前两个就是温度
+  99   1        i = Read_OneChar();           //读0地址寄存器，扔掉
+ 100   1        i = Read_OneChar();         //读1地址寄存器，扔掉
+ 101   1        temp_up = Read_OneChar();     //读2地址寄存器
+ 102   1        temp_down = Read_OneChar();     //读3地址寄存器 
+ 103   1      } 
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    238    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      5       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

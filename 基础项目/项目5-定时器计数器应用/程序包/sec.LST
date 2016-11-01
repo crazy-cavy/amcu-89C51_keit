@@ -1,0 +1,65 @@
+C51 COMPILER V8.02   SEC                                                                   11/07/2010 19:25:49 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE SEC
+OBJECT MODULE PLACED IN sec.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE sec.c BROWSE DEBUG OBJECTEXTEND TABS(3)
+
+line level    source
+
+   1          /************************************************************************************/
+   2          //利用定时器0中断，实现SEG0秒计数
+   3          /************************************************************************************/
+   4          #include<reg51.h>
+   5          code unsigned char seven_seg[10] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+   6          unsigned char cp,i;                  //声明全局变量
+   7          void timer0_isr(void)  interrupt 1      // timer0中断服务函数
+   8          {
+   9   1         TR0 = 0;                     //停止计数
+  10   1         TL0 = 0x78;                  //TL0重新预置，把63536转化为16进制后的低8位
+  11   1         TH0 = 0xec;                  // TH0重新预置
+  12   1         TR0 = 0;                     //开始计数
+  13   1         cp++;                        // timer0中断1次，变量cp加1
+  14   1         if(cp == 200)                   //中断200次，时间刚好为1秒
+  15   1         {
+  16   2            cp = 0;
+  17   2            i ++;
+  18   2         }
+  19   1         P2 = 0xfe;                 //P2输出数码管的位选信号，seg0亮
+  20   1         if(i == 10) i = 0;
+  21   1         P0 = seven_seg[i];              // P0输出显示数据
+  22   1         TR0=1;
+  23   1      }
+  24          void timer0_initialize(void)            // timer0中断初始化函数
+  25          {
+  26   1         EA = 0;                       //设置中断允许寄存器IE中的 EA位，关闭中断总开关
+  27   1         TMOD = 0x01;                  //设置计时器模式控制寄存器，Time0工作在定时方式1,16为定时器
+  28   1         TR0 = 0;       //设置计时器控制寄存器TCON寄存器的TR0位为0，Timer0停止计数
+  29   1         TL0 = (65536 - 5000) % 256;    //设置定时器的低8位初值，计5000个机器周期脉冲就会溢出
+  30   1         TH0 = (65536 - 5000) / 256;; //设置定时器的高8位初值，假设单片机晶振为12MHz。
+  31   1                                 //频率，单片机的机器周期为1微妙，Timer0每1微秒加1
+  32   1                                 //计数，加满溢出变产生中断，从计数到中断刚好为5毫秒
+  33   1         PT0 = 1;                      //设置中断优先次序寄存器IP中的PT0位，Timer0中断优先
+  34   1         ET0 = 1;                      //设置中断允许寄存器IE中ET0的位，开启中断小开关
+  35   1         EA = 1;                       //打开中断总开关
+  36   1         TR0 = 1;                      //开始计数
+  37   1      }
+  38          void main (void)
+  39          {
+  40   1         timer0_initialize();               // timer0初始化，为中断做好准备
+  41   1         while (1);                      //等待中断
+  42   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     87    ----
+   CONSTANT SIZE    =     10    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

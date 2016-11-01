@@ -1,0 +1,189 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/20/2010  17:48:43  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE ad.obj TO ad RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  ad.obj (AD)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?UIDIV)
+
+
+LINK MAP OF MODULE:  ad (AD)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0006H     UNIT         ?DT?AD
+            IDATA   000EH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     0055H     UNIT         ?C?LIB_CODE
+            CODE    0063H     0045H     UNIT         ?PR?MAIN?AD
+            CODE    00A8H     0043H     UNIT         ?PR?_CHULI?AD
+            CODE    00EBH     002AH     UNIT         ?PR?TIMER0_ISR?AD
+            CODE    0115H     0023H     UNIT         ?PR?AD_549?AD
+            CODE    0138H     0016H     UNIT         ?PR?TIMER0_INIT?AD
+            CODE    014EH     0010H     UNIT         ?CO?AD
+            CODE    015EH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   ad (AD)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?AD
+
+?PR?MAIN?AD
+  +--> ?PR?TIMER0_INIT?AD
+  +--> ?PR?AD_549?AD
+  +--> ?PR?_CHULI?AD
+  +--> ?CO?AD
+
+
+
+SYMBOL TABLE OF MODULE:  ad (AD)
+
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/20/2010  17:48:43  PAGE 2
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        AD
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  C:00EBH         PUBLIC        timer0_isr
+  B:00A8H.7       PUBLIC        EA
+  C:0063H         PUBLIC        main
+  D:0008H         PUBLIC        qian
+  D:0009H         PUBLIC        bai
+  B:0090H.1       PUBLIC        sclk
+  B:0090H.5       PUBLIC        data_temp
+  D:0089H         PUBLIC        TMOD
+  D:000AH         PUBLIC        shi
+  C:0115H         PUBLIC        ad_549
+  B:00A8H.1       PUBLIC        ET0
+  D:000BH         PUBLIC        ge
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:00B8H.1       PUBLIC        PT0
+  B:0090H.4       PUBLIC        cs
+  C:014EH         PUBLIC        tb
+  B:0088H.4       PUBLIC        TR0
+  D:000CH         PUBLIC        j
+  C:0158H         PUBLIC        seg_bit_scan
+  C:0138H         PUBLIC        timer0_init
+  C:00A8H         PUBLIC        _chuli
+  -------         PROC          _CHULI
+  D:0002H         SYMBOL        num
+  C:00A8H         LINE#         12
+  C:00ACH         LINE#         13
+  C:00ACH         LINE#         15
+  C:00B5H         LINE#         16
+  C:00C9H         LINE#         17
+  C:00DDH         LINE#         18
+  C:00EAH         LINE#         19
+  -------         ENDPROC       _CHULI
+  -------         PROC          AD_549
+  -------         DO            
+  D:0005H         SYMBOL        i
+  D:0006H         SYMBOL        data_ad
+  -------         ENDDO         
+  C:0115H         LINE#         20
+  C:0115H         LINE#         21
+  C:0115H         LINE#         23
+  C:0118H         LINE#         24
+  C:011AH         LINE#         25
+  C:011CH         LINE#         26
+  C:011EH         LINE#         27
+  C:011FH         LINE#         28
+  C:0120H         LINE#         29
+  C:0120H         LINE#         30
+  C:0122H         LINE#         32
+  C:0128H         LINE#         33
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/20/2010  17:48:43  PAGE 3
+
+
+  C:012AH         LINE#         34
+  C:0131H         LINE#         35
+  C:0135H         LINE#         36
+  C:0137H         LINE#         37
+  C:0137H         LINE#         38
+  C:0137H         LINE#         39
+  -------         ENDPROC       AD_549
+  -------         PROC          TIMER0_ISR
+  C:00EBH         LINE#         40
+  C:00EFH         LINE#         43
+  C:00F1H         LINE#         44
+  C:00F4H         LINE#         45
+  C:00F7H         LINE#         46
+  C:00FFH         LINE#         47
+  C:0108H         LINE#         48
+  C:010EH         LINE#         49
+  C:0110H         LINE#         50
+  -------         ENDPROC       TIMER0_ISR
+  -------         PROC          TIMER0_INIT
+  C:0138H         LINE#         51
+  C:0138H         LINE#         52
+  C:0138H         LINE#         53
+  C:013AH         LINE#         54
+  C:013DH         LINE#         55
+  C:013FH         LINE#         56
+  C:0142H         LINE#         57
+  C:0145H         LINE#         58
+  C:0147H         LINE#         59
+  C:0149H         LINE#         60
+  C:014BH         LINE#         61
+  C:014DH         LINE#         62
+  -------         ENDPROC       TIMER0_INIT
+  -------         PROC          MAIN
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:0063H         LINE#         63
+  C:0063H         LINE#         64
+  C:0063H         LINE#         67
+  C:0066H         LINE#         68
+  C:0066H         LINE#         69
+  C:0066H         LINE#         71
+  C:0069H         LINE#         73
+  C:006CH         LINE#         74
+  C:006FH         LINE#         75
+  C:0082H         LINE#         76
+  C:0082H         LINE#         77
+  C:0086H         LINE#         78
+  C:008AH         LINE#         79
+  C:0096H         LINE#         80
+  C:009EH         LINE#         81
+  C:009EH         LINE#         82
+  C:00A6H         LINE#         83
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        AD
+
+  -------         MODULE        ?C?UIDIV
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/20/2010  17:48:43  PAGE 4
+
+
+  C:000EH         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
+
+Program Size: data=15.0 xdata=0 code=354
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,53 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+C:\Documents and Settings\Administrator\桌面\项目3-数字温度传感器DS18B20应用\程序\asfdasf.uv2
+Project File Date:  11/20/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling main.c...
+linking...
+Program Size: data=19.0 xdata=0 code=657
+creating hex file from "asfdasf"...
+"asfdasf" - 0 Error(s), 0 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+18B20.C(102): error C202: 'temp_domn': undefined identifier
+Target not created
+Build target 'Target 1'
+compiling main.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?WRITE_TEMPROM?MAIN
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?READ_TEMPROM?MAIN
+Program Size: data=23.0 xdata=0 code=710
+creating hex file from "asfdasf"...
+"asfdasf" - 0 Error(s), 2 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+18B20.C(81): error C202: 'temp_down_set': undefined identifier
+Target not created
+Build target 'Target 1'
+compiling main.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_WRITE_TEMPROM?MAIN
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?READ_TEMPROM?MAIN
+Program Size: data=21.0 xdata=0 code=714
+creating hex file from "asfdasf"...
+"asfdasf" - 0 Error(s), 2 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_WRITE_TEMPROM?MAIN
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?READ_TEMPROM?MAIN
+Program Size: data=21.0 xdata=0 code=714
+creating hex file from "asfdasf"...
+"asfdasf" - 0 Error(s), 2 Warning(s).

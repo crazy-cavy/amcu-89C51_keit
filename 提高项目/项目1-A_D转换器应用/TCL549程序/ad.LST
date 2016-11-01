@@ -1,0 +1,112 @@
+C51 COMPILER V8.02   AD                                                                    06/20/2010 17:48:43 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE AD
+OBJECT MODULE PLACED IN ad.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ad.c BROWSE DEBUG OBJECTEXTEND TABS(3)
+
+line level    source
+
+   1          #include <REGX51.H>
+   2          #include "intrins.h"
+   3          #define  uchar unsigned char
+   4          #define  uint    unsigned int
+   5          uchar code  tb[10] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+   6          uchar code seg_bit_scan[] = {0xdf,0xef,0xf7,0xfb,0xfd,0xfe}; //各个数码管对应的位选数据
+   7          sbit data_temp = P1^5;   //数据线
+   8          sbit cs = P1^4;         //片选
+   9          sbit sclk = P1^1;     //io口时钟
+  10          uchar qian,bai,shi,ge;
+  11          uint j;
+  12          void chuli(uint num)   //显示程序
+  13          {
+  14   1        
+  15   1        qian=num/1000;        //千，百，十，个处理
+  16   1        bai=num/100%10;
+  17   1        shi=num/10%10;
+  18   1        ge=num%10;
+  19   1      } 
+  20          uint ad_549()         //TLC549处理
+  21          {
+  22   1        uchar i;
+  23   1        uint data_ad = 0;
+  24   1        cs = 1;            //初始化，启动
+  25   1        sclk = 0;
+  26   1        cs = 0;
+  27   1        _nop_();         
+  28   1        for(i = 0;i < 8;i++)  //读取采集数据，读取的是上一次采集数据
+  29   1          {
+  30   2           sclk = 1; 
+  31   2          
+  32   2           if(data_temp)data_ad |= 0x01;
+  33   2           sclk = 0;  
+  34   2           data_ad = data_ad << 1;  
+  35   2         }  
+  36   1        cs = 1;
+  37   1        data_ad = data_ad  * (500/ 256);   
+  38   1        return(data_ad); 
+  39   1      }
+  40          void timer0_isr(void)  interrupt 1               // timer0中断服务函数
+  41          {
+  42   1                                                   //数码管的位选变量
+  43   1         TR0 = 0;                                     //停止计数
+  44   1         TL0 = (65536-10000)%256;
+  45   1         TH0 = (65536-10000)/256; 
+  46   1         j++;                                         //位循环变量加1
+  47   1         if(j >= 4)
+  48   1         j = 0;                                    //循环显示1次，j清零
+  49   1            TR0 = 1;
+  50   1      }
+  51          void timer0_init (void)                // timer0中断初始化函数
+  52          {
+  53   1         EA = 0;                      
+  54   1         TMOD = 0x01;             
+  55   1         TR0 = 0;                      
+C51 COMPILER V8.02   AD                                                                    06/20/2010 17:48:43 PAGE 2   
+
+  56   1         TL0 = (65536-10000)%256;
+  57   1         TH0 = (65536-10000)/256;                  
+  58   1         PT0 = 1;                      
+  59   1         ET0 = 1;                     
+  60   1         EA = 1;                      
+  61   1         TR0 = 1;                      
+  62   1      }                 
+  63          void main(void)             //主程序
+  64          {  
+  65   1      
+  66   1         uint i;
+  67   1         timer0_init ();
+  68   1         while(1)
+  69   1         {  
+  70   2            
+  71   2            i = ad_549();
+  72   2            
+  73   2               chuli(i);     //显示最终结果
+  74   2            P0=0xff;
+  75   2            switch(j)
+  76   2            {
+  77   3               case 0: P0 = tb[ge]; break;      
+  78   3               case 1: P0 = tb[shi]; break;     
+  79   3               case 2: P0 = tb[bai]&0x7f; break;
+  80   3               case 3: P0 = tb[qian]; break;    
+  81   3            } 
+  82   2            P2 = seg_bit_scan[j];                    //与j对应，P2输出数码管的位选信号
+  83   2            } 
+  84   1      
+  85   1         }
+  86          
+  87            
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    235    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

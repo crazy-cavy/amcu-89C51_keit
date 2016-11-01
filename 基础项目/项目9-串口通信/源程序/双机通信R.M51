@@ -1,0 +1,98 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        07/01/2010  17:07:36  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE 双机通信接收.obj TO 双机通信R
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  双机通信接收.obj (薩籣通信接收)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  双机通信R (薩籣通信接收)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?薩籣通信接收
+            IDATA   0009H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0016H     UNIT         ?PR?MAIN?薩籣通信接收
+            CODE    0019H     000FH     UNIT         ?PR?INIT?薩籣通信接收
+            CODE    0028H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   双机通信R (薩籣通信接收)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?薩籣通信接收
+
+?PR?MAIN?薩籣通信接收
+  +--> ?PR?INIT?薩籣通信接收
+
+
+
+SYMBOL TABLE OF MODULE:  双机通信R (薩籣通信接收)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        薩籣通信接收
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  B:0098H.0       PUBLIC        RI
+  C:0003H         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+BL51 BANKED LINKER/LOCATER V6.00                                                      07/01/2010  17:07:36  PAGE 2
+
+
+  D:0089H         PUBLIC        TMOD
+  C:0019H         PUBLIC        init
+  D:008DH         PUBLIC        TH1
+  D:008BH         PUBLIC        TL1
+  B:0088H.6       PUBLIC        TR1
+  D:0008H         PUBLIC        a
+  -------         PROC          INIT
+  C:0019H         LINE#         4
+  C:0019H         LINE#         5
+  C:0019H         LINE#         6
+  C:001CH         LINE#         7
+  C:001FH         LINE#         8
+  C:0022H         LINE#         9
+  C:0025H         LINE#         10
+  C:0027H         LINE#         11
+  -------         ENDPROC       INIT
+  -------         PROC          MAIN
+  C:0003H         LINE#         12
+  C:0003H         LINE#         13
+  C:0003H         LINE#         14
+  C:0006H         LINE#         15
+  C:0009H         LINE#         16
+  C:000CH         LINE#         17
+  C:000CH         LINE#         18
+  C:000CH         LINE#         19
+  C:000FH         LINE#         20
+  C:0012H         LINE#         21
+  C:0015H         LINE#         22
+  C:0017H         LINE#         23
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        薩籣通信接收
+
+Program Size: data=10.0 xdata=0 code=52
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

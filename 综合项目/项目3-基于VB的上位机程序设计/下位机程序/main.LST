@@ -1,0 +1,205 @@
+C51 COMPILER V8.02   MAIN                                                                  07/05/2010 20:48:16 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: d:\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********该程序主要是利用DS18B20采集温度，然后通过数码管显示温度*************/
+   2          /*当程序收到上位机发送的命令之后，该程序会将当时的温度值通过串口发送给上位机*/
+   3          #include<reg51.h>
+   4          #define uchar unsigned char
+   5          #define uint unsigned int
+   6          sbit DQ = P1^0;         //定义DS18B20的信号线端口
+   7          uchar i,j;
+   8          uchar dis_buffer[4];//定义数据缓冲数组
+   9          uchar bit_ser[]={0xfe,0xfd,0xfb,0xf7}; //定义数码管片选数组
+  10          uchar seven_seg[] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+  11                                                                                     //定义数码管段选数组
+  12          /****************************延时函数*********************************/
+  13          void delay(uint x)
+  14          {
+  15   1              while(x)   
+  16   1              x--;
+  17   1      }
+  18          /*************************DS18B20初始化函数***************************/
+  19          void Init_DS18B20(void)
+  20          {
+  21   1              unsigned char x=0;
+  22   1              DQ = 1;         //DQ复位
+  23   1              delay(8);       //稍做延时
+  24   1              DQ = 0;             //单片机将DQ拉低
+  25   1              delay(80);      //精确延时 大于 480us
+  26   1              DQ = 1;         //拉高总线
+  27   1              delay(14);
+  28   1              x=DQ;               //稍做延时后 如果x=0则初始化成功 x=1则初始化失败
+  29   1              delay(20);
+  30   1      }
+  31          /***************************从18B20中读一个字节************************/
+  32          uchar ReadOneChar(void)
+  33          {
+  34   1              uchar i=0;
+  35   1              uchar dat = 0;
+  36   1              for (i=8;i>0;i--)
+  37   1              {
+  38   2                      DQ = 0;         // 给脉冲信号
+  39   2                      dat>>=1;
+  40   2                      DQ = 1;         // 给脉冲信号
+  41   2                      if(DQ)
+  42   2                      dat|=0x80;  
+  43   2                      delay(8);
+  44   2              }
+  45   1              return(dat);
+  46   1      }
+  47          /***************************向18B20中写一个字节************************/
+  48          Write_OneChar(uchar dat)
+  49          {
+  50   1              uchar i=0;
+  51   1              for (i=8; i>0; i--)
+  52   1              {
+  53   2                      DQ = 0;   //给脉冲信号
+  54   2                      DQ = dat & 0x01;
+  55   2                      delay(5); 
+C51 COMPILER V8.02   MAIN                                                                  07/05/2010 20:48:16 PAGE 2   
+
+  56   2                      DQ = 1;   //给脉冲信号
+  57   2                      dat >>= 1;
+  58   2              }
+  59   1              delay(4);
+  60   1      }
+  61          /**************************从18B20中读取一个字节***********************/
+  62          int Read_Temperature(void)
+  63          {
+  64   1              uchar i = 0,t = 0,a,b;
+  65   1              int temp;
+  66   1              Init_DS18B20();
+  67   1              Write_OneChar(0xcc);    // 跳过读序号列号的操作
+  68   1              Write_OneChar(0x44);    // 启动温度转换
+  69   1              Init_DS18B20();
+  70   1              Write_OneChar(0xcc);    //跳过读序号列号的操作
+  71   1              Write_OneChar(0xbe);    //读取温度寄存器等（共可读9个寄存器） 前两个就是温度
+  72   1              i = ReadOneChar();      //读取温度值低位
+  73   1              t = ReadOneChar();      //读取温度值高位
+  74   1              a = i & 0x0f;
+  75   1              b = t;
+  76   1              i = i >> 4;             //低位右移4位，舍弃小数部分
+  77   1              t = t << 4;             //高位左移4位，舍弃符号位
+  78   1              t = t | i;
+  79   1              temp = (t + a * 0.0625) * 100; //得到一个比实际温度扩到100倍的值，主要是为了更好的显示和传输          
+  80   1              return(temp);                   //返回温度值
+  81   1      }
+  82          
+  83          /***************************初始化定时器0******************************/
+  84          void timer0_init(void)                   //
+  85          {
+  86   1              TMOD = 0x21; //由于串口通信需要使用定时器1，因此TMOD的值是0x21
+  87   1              TL0 = (65536-5000) % 256;
+  88   1              TH0 = (65536-5000) / 256;
+  89   1              EA = 1;
+  90   1              ET0 = 1;
+  91   1              TR0 = 1;
+  92   1      }
+  93          /*************************发送数据的函数********************************/
+  94          void txd_data(char send_data)   
+  95          {
+  96   1              SBUF = send_data; //将需要发送的数据放入发送缓冲区
+  97   1              while(!TI);               //等待发送数据
+  98   1              TI = 0;
+  99   1      }
+ 100          /********************T0中断处理函数，主要用于显示当前温度***************/
+ 101          void timer0_isr(void) interrupt 1
+ 102          {
+ 103   1              int temp; 
+ 104   1              TR0 = 0;
+ 105   1              TL0 = (65536-5000) % 256;
+ 106   1              TH0 = (65536-5000) / 256;
+ 107   1              TR0 = 1;
+ 108   1              switch(i)
+ 109   1              {
+ 110   2                      case 0:
+ 111   2                              P2 = bit_ser[0];
+ 112   2                              P0 = seven_seg[dis_buffer[0]];                          
+ 113   2                              break;
+ 114   2                      case 1:
+ 115   2                              P2 = bit_ser[1];
+ 116   2                              P0 =seven_seg[dis_buffer[1]] & 0x7f;
+ 117   2                              break;
+C51 COMPILER V8.02   MAIN                                                                  07/05/2010 20:48:16 PAGE 3   
+
+ 118   2                      case 2:
+ 119   2                              P2 = bit_ser[2];
+ 120   2                              P0 =seven_seg[dis_buffer[2]];
+ 121   2                              break;
+ 122   2                      case 3:
+ 123   2                              P2 = bit_ser[3];
+ 124   2                              P0 =seven_seg[dis_buffer[3]];
+ 125   2                              break;
+ 126   2              } 
+ 127   1              i++;
+ 128   1              if(i >= 4) 
+ 129   1              {
+ 130   2                      i = 0;
+ 131   2                      j++;
+ 132   2                      if(j >= 10)     //如果到200ms就会读取一次温度，并将温度值放入显示缓冲区
+ 133   2                      {
+ 134   3                              j = 0;
+ 135   3                              temp = Read_Temperature();
+ 136   3                              dis_buffer[0] = temp / 1000;
+ 137   3                              dis_buffer[1] = temp % 1000 / 100;
+ 138   3                              dis_buffer[2] = temp % 100 / 10;
+ 139   3                              dis_buffer[3] = temp % 10;
+ 140   3                      }
+ 141   2              }
+ 142   1      }
+ 143          
+ 144          /***************************串口通信初始化函数***************************/
+ 145          void uart_init(void)
+ 146          { 
+ 147   1              SCON = 0x50;         //方式1,充许接收
+ 148   1              TMOD = 0x21;         //T1方式2定时，T0方式是1          
+ 149   1              TH1 = 0xFd;          //波特率9600,Fosc=11.0592MHz
+ 150   1              TL1 = 0xFd;
+ 151   1              TR1 = 1;
+ 152   1              ES = 1;                  // 打开串口中断
+ 153   1      }
+ 154          /**************************串口中断处理函数*****************************/
+ 155          void uart() interrupt 4                   
+ 156          {
+ 157   1              char y,i;
+ 158   1              while(!RI);
+ 159   1              y = SBUF;                        //读取接收的信息，然后判断是否为发送温度命令
+ 160   1              if(y == '0')             //如果为发送命令，就将当前数据缓冲数组内的数据发送给上位机
+ 161   1              {
+ 162   2                      for(i = 0;i <= 3;i++)
+ 163   2                      {
+ 164   3                              txd_data(dis_buffer[i] + 48);
+ 165   3                      }
+ 166   2              }
+ 167   1              RI = 0;         
+ 168   1      }
+ 169          /*******************************主函数*********************************/
+ 170          void main()
+ 171          {
+ 172   1              timer0_init();          //调用T0初始化函数
+ 173   1              uart_init();            //调用串口初始化函数
+ 174   1              while(1)
+ 175   1              {}
+ 176   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V8.02   MAIN                                                                  07/05/2010 20:48:16 PAGE 4   
+
+   CODE SIZE        =    556    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     20       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,58 @@
+C51 COMPILER V8.02   薩籣通信发送                                                          07/01/2010 17:07:01 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 薩籣通信发送
+OBJECT MODULE PLACED IN 双机通信发送.OBJ
+COMPILER INVOKED BY: d:\Keil\C51\BIN\C51.EXE 双机通信发送.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <reg51.h>
+   2          #define uchar unsigned char
+   3          sbit key3=P3^2;
+   4          uchar i;
+   5          uchar code tb[]={0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
+   6          void delay(int z)                       //延时子函数
+   7          {
+   8   1              int i,j;
+   9   1              for(i=0;i<z;i++)
+  10   1              for(j=0;j<500;j++);
+  11   1      }
+  12          void init()                                     //串口初始化
+  13          {
+  14   1              SCON=0X50;
+  15   1              TMOD=0X20;
+  16   1              TH1=0XFD;
+  17   1              TL1=0XFD;
+  18   1              TR1=1;
+  19   1      }
+  20          void main()
+  21          {
+  22   1              init();
+  23   1              P2=0Xdf;
+  24   1              while(1)
+  25   1              {
+  26   2                      for(i=0;i<10;i++)               //连续发送数组数据
+  27   2                      {       
+  28   3                      SBUF=tb[i];                             //送缓冲区
+  29   3                      P0=tb[i];                               //数据送P0口
+  30   3                      while(TI==0);                   //判断是否发送完成
+  31   3                      TI=0;                                   
+  32   3                  delay(500);
+  33   3                      }       
+  34   2              }
+  35   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     95    ----
+   CONSTANT SIZE    =     10    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

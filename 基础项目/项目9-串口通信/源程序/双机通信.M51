@@ -1,0 +1,119 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        07/01/2010  17:07:01  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE 双机通信发送.obj TO 双机通信
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  双机通信发送.obj (薩籣通信发送)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  双机通信 (薩籣通信发送)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?薩籣通信发送
+            IDATA   0009H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     002AH     UNIT         ?PR?MAIN?薩籣通信发送
+            CODE    002DH     0026H     UNIT         ?PR?_DELAY?薩籣通信发送
+            CODE    0053H     000FH     UNIT         ?PR?INIT?薩籣通信发送
+            CODE    0062H     000CH     UNIT         ?C_C51STARTUP
+            CODE    006EH     000AH     UNIT         ?CO?薩籣通信发送
+
+
+
+OVERLAY MAP OF MODULE:   双机通信 (薩籣通信发送)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?薩籣通信发送
+
+?PR?MAIN?薩籣通信发送
+  +--> ?PR?INIT?薩籣通信发送
+  +--> ?CO?薩籣通信发送
+  +--> ?PR?_DELAY?薩籣通信发送
+
+
+
+SYMBOL TABLE OF MODULE:  双机通信 (薩籣通信发送)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        薩籣通信发送
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+BL51 BANKED LINKER/LOCATER V6.00                                                      07/01/2010  17:07:01  PAGE 2
+
+
+  D:00B0H         PUBLIC        P3
+  B:0098H.1       PUBLIC        TI
+  C:0003H         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  C:0053H         PUBLIC        init
+  D:008DH         PUBLIC        TH1
+  D:008BH         PUBLIC        TL1
+  C:006EH         PUBLIC        tb
+  B:0088H.6       PUBLIC        TR1
+  D:0008H         PUBLIC        i
+  C:002DH         PUBLIC        _delay
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        z
+  -------         DO            
+  D:0004H         SYMBOL        i
+  D:0002H         SYMBOL        j
+  -------         ENDDO         
+  C:002DH         LINE#         6
+  C:002DH         LINE#         7
+  C:002DH         LINE#         9
+  C:003DH         LINE#         10
+  C:0052H         LINE#         11
+  -------         ENDPROC       _DELAY
+  -------         PROC          INIT
+  C:0053H         LINE#         12
+  C:0053H         LINE#         13
+  C:0053H         LINE#         14
+  C:0056H         LINE#         15
+  C:0059H         LINE#         16
+  C:005CH         LINE#         17
+  C:005FH         LINE#         18
+  C:0061H         LINE#         19
+  -------         ENDPROC       INIT
+  -------         PROC          MAIN
+  C:0003H         LINE#         20
+  C:0003H         LINE#         21
+  C:0003H         LINE#         22
+  C:0006H         LINE#         23
+  C:0009H         LINE#         24
+  C:0009H         LINE#         25
+  C:0009H         LINE#         26
+  C:000CH         LINE#         27
+  C:000CH         LINE#         28
+  C:0014H         LINE#         29
+  C:0016H         LINE#         30
+  C:0019H         LINE#         31
+  C:001BH         LINE#         32
+  C:0022H         LINE#         33
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        薩籣通信发送
+
+Program Size: data=10.0 xdata=0 code=120
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

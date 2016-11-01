@@ -1,0 +1,274 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/06/2009  21:23:01  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 1302.obj TO dd
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  1302.obj (1302)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  dd (1302)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0009H     UNIT         ?DT?1302
+            DATA    0011H     0001H     UNIT         _DATA_GROUP_
+            IDATA   0012H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0008H     UNIT         ?PR?MAIN?1302
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     00A8H     UNIT         ?PR?TIME0?1302
+            CODE    00B6H     003FH     UNIT         ?PR?INIT1302?1302
+            CODE    00F5H     0031H     UNIT         ?PR?GET_TIME?1302
+            CODE    0126H     0020H     UNIT         ?CO?1302
+            CODE    0146H     0016H     UNIT         ?PR?_WRITE_RTC?1302
+            CODE    015CH     0010H     UNIT         ?PR?READ_RTC?1302
+            CODE    016CH     0010H     UNIT         ?PR?INITMCU?1302
+            CODE    017CH     000FH     UNIT         ?PR?_WRITE1302?1302
+            CODE    018BH     000CH     UNIT         ?C_C51STARTUP
+            CODE    0197H     000BH     UNIT         ?PR?_READ1302?1302
+
+
+
+OVERLAY MAP OF MODULE:   dd (1302)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?PR?TIME0?1302                 0011H    0001H
+  +--> ?PR?GET_TIME?1302
+  +--> ?CO?1302
+
+?PR?GET_TIME?1302              -----    -----
+  +--> ?PR?_READ1302?1302
+
+?PR?_READ1302?1302             -----    -----
+  +--> ?PR?_WRITE_RTC?1302
+  +--> ?PR?READ_RTC?1302
+
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/06/2009  21:23:01  PAGE 2
+
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?1302
+
+?PR?MAIN?1302                  -----    -----
+  +--> ?PR?INITMCU?1302
+  +--> ?PR?INIT1302?1302
+
+?PR?INIT1302?1302              -----    -----
+  +--> ?PR?_WRITE1302?1302
+
+?PR?_WRITE1302?1302            -----    -----
+  +--> ?PR?_WRITE_RTC?1302
+
+
+
+SYMBOL TABLE OF MODULE:  dd (1302)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        1302
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  B:0090H.2       PUBLIC        rtc_rst
+  B:00A8H.7       PUBLIC        EA
+  B:00E0H.0       PUBLIC        a0
+  D:0008H         PUBLIC        flash
+  B:00E0H.7       PUBLIC        a7
+  C:013AH         PUBLIC        bit_select
+  C:0003H         PUBLIC        main
+  D:0089H         PUBLIC        TMOD
+  C:014CH         PUBLIC        _write_rtc
+  C:0126H         PUBLIC        seven_tab
+  C:0197H         PUBLIC        _read1302
+  B:0090H.1       PUBLIC        rtc_data
+  D:00E0H         PUBLIC        ACC
+  D:0009H         PUBLIC        dot
+  C:015CH         PUBLIC        read_rtc
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  C:00F5H         PUBLIC        get_time
+  C:017CH         PUBLIC        _write1302
+  B:0088H.4       PUBLIC        TR0
+  C:000EH         PUBLIC        time0
+  D:000AH         PUBLIC        time1
+  B:0090H.0       PUBLIC        rtc_clk
+  D:0010H         PUBLIC        tt
+  C:016CH         PUBLIC        initmcu
+  C:00B6H         PUBLIC        init1302
+  -------         PROC          L?0025
+  -------         ENDPROC       L?0025
+  -------         PROC          _WRITE_RTC
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/06/2009  21:23:01  PAGE 3
+
+
+  D:0007H         SYMBOL        date
+  -------         DO            
+  D:0007H         SYMBOL        i
+  -------         ENDDO         
+  C:014CH         LINE#         15
+  C:014CH         LINE#         16
+  C:014CH         LINE#         18
+  C:014DH         LINE#         19
+  C:014FH         LINE#         20
+  C:014FH         LINE#         21
+  C:0153H         LINE#         22
+  C:0155H         LINE#         23
+  C:0157H         LINE#         24
+  C:0159H         LINE#         25
+  C:015BH         LINE#         26
+  -------         ENDPROC       _WRITE_RTC
+  -------         PROC          READ_RTC
+  -------         DO            
+  D:0007H         SYMBOL        i
+  -------         ENDDO         
+  C:015CH         LINE#         28
+  C:015CH         LINE#         29
+  C:015CH         LINE#         31
+  C:015EH         LINE#         32
+  C:015EH         LINE#         33
+  C:0160H         LINE#         34
+  C:0164H         LINE#         35
+  C:0166H         LINE#         36
+  C:0168H         LINE#         37
+  C:016AH         LINE#         38
+  C:016BH         LINE#         39
+  -------         ENDPROC       READ_RTC
+  -------         PROC          _WRITE1302
+  D:0007H         SYMBOL        address
+  D:0006H         SYMBOL        date
+  C:017CH         LINE#         41
+  C:017EH         LINE#         42
+  C:017EH         LINE#         43
+  C:017EH         LINE#         44
+  C:017EH         LINE#         45
+  C:017EH         LINE#         46
+  C:0181H         LINE#         47
+  C:0186H         LINE#         48
+  C:0188H         LINE#         49
+  C:018AH         LINE#         50
+  -------         ENDPROC       _WRITE1302
+  -------         PROC          _READ1302
+  D:0007H         SYMBOL        address
+  -------         DO            
+  D:0007H         SYMBOL        temp
+  -------         ENDDO         
+  C:0197H         LINE#         51
+  C:0197H         LINE#         52
+  C:0197H         LINE#         54
+  C:0197H         LINE#         55
+  C:0197H         LINE#         56
+  C:0197H         LINE#         57
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/06/2009  21:23:01  PAGE 4
+
+
+  C:019AH         LINE#         58
+  C:019DH         LINE#         59
+  C:019FH         LINE#         60
+  C:01A1H         LINE#         61
+  C:01A1H         LINE#         62
+  -------         ENDPROC       _READ1302
+  -------         PROC          INIT1302
+  C:00B6H         LINE#         63
+  C:00B6H         LINE#         64
+  C:00B6H         LINE#         65
+  C:00BDH         LINE#         67
+  C:00C4H         LINE#         68
+  C:00CBH         LINE#         69
+  C:00D2H         LINE#         70
+  C:00D9H         LINE#         71
+  C:00E0H         LINE#         72
+  C:00E7H         LINE#         73
+  C:00EEH         LINE#         74
+  -------         ENDPROC       INIT1302
+  -------         PROC          GET_TIME
+  -------         DO            
+  D:0007H         SYMBOL        d
+  -------         ENDDO         
+  C:00F5H         LINE#         76
+  C:00F5H         LINE#         77
+  C:00F5H         LINE#         79
+  C:00FAH         LINE#         80
+  C:00FFH         LINE#         81
+  C:0105H         LINE#         82
+  C:010AH         LINE#         83
+  C:010FH         LINE#         84
+  C:0115H         LINE#         85
+  C:011AH         LINE#         86
+  C:011FH         LINE#         87
+  C:0125H         LINE#         88
+  -------         ENDPROC       GET_TIME
+  -------         PROC          TIME0
+  -------         DO            
+  D:0011H         SYMBOL        i
+  -------         ENDDO         
+  C:000EH         LINE#         89
+  C:001FH         LINE#         92
+  C:0021H         LINE#         93
+  C:0024H         LINE#         94
+  C:0027H         LINE#         95
+  C:0029H         LINE#         96
+  C:002BH         LINE#         97
+  C:0030H         LINE#         98
+  C:0030H         LINE#         99
+  C:0033H         LINE#         100
+  C:003FH         LINE#         101
+  C:003FH         LINE#         102
+  C:0042H         LINE#         103
+  C:004AH         LINE#         104
+  C:004DH         LINE#         105
+  C:0050H         LINE#         106
+  C:0062H         LINE#         107
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/06/2009  21:23:01  PAGE 5
+
+
+  C:006DH         LINE#         108
+  C:0087H         LINE#         110
+  C:009DH         LINE#         111
+  C:009FH         LINE#         112
+  C:00A7H         LINE#         113
+  -------         ENDPROC       TIME0
+  -------         PROC          INITMCU
+  C:016CH         LINE#         114
+  C:016CH         LINE#         115
+  C:016CH         LINE#         116
+  C:016FH         LINE#         117
+  C:0172H         LINE#         118
+  C:0175H         LINE#         119
+  C:0177H         LINE#         120
+  C:0179H         LINE#         121
+  C:017BH         LINE#         122
+  -------         ENDPROC       INITMCU
+  -------         PROC          MAIN
+  C:0003H         LINE#         123
+  C:0003H         LINE#         124
+  C:0003H         LINE#         125
+  C:0006H         LINE#         126
+  C:0009H         LINE#         127
+  C:0009H         LINE#         128
+  C:0009H         LINE#         130
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        1302
+
+Program Size: data=19.0 xdata=0 code=418
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

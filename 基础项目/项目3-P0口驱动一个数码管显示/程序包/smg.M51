@@ -1,0 +1,94 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        10/31/2016  03:24:09  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+H:\CODE\MICROCOMPUTER\SOFTWARE\KEIL5-MDK\C51\BIN\BL51.EXE smg.obj TO smg
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  smg.obj (SMG)
+  H:\CODE\MICROCOMPUTER\SOFTWARE\KEIL5-MDK\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  smg (SMG)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0018H     UNIT         ?PR?MAIN?SMG
+            CODE    001BH     0012H     UNIT         ?CO?SMG
+            CODE    002DH     000DH     UNIT         ?PR?DELAY?SMG
+            CODE    003AH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   smg (SMG)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?SMG
+
+?PR?MAIN?SMG
+  +--> ?CO?SMG
+  +--> ?PR?DELAY?SMG
+
+
+
+SYMBOL TABLE OF MODULE:  smg (SMG)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        SMG
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  C:002DH         PUBLIC        delay
+  C:0003H         PUBLIC        main
+  C:001BH         PUBLIC        seven_seg
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/31/2016  03:24:09  PAGE 2
+
+
+  -------         PROC          DELAY
+  -------         DO            
+  D:0007H         SYMBOL        i
+  D:0006H         SYMBOL        j
+  -------         ENDDO         
+  C:002DH         LINE#         3
+  C:002DH         LINE#         4
+  C:002DH         LINE#         6
+  C:002FH         LINE#         7
+  C:0039H         LINE#         8
+  -------         ENDPROC       DELAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0005H         SYMBOL        i
+  -------         ENDDO         
+  C:0003H         LINE#         9
+  C:0003H         LINE#         10
+  C:0003H         LINE#         12
+  C:0006H         LINE#         13
+  C:0006H         LINE#         14
+  C:0006H         LINE#         15
+  C:0008H         LINE#         16
+  C:0008H         LINE#         17
+  C:000FH         LINE#         18
+  C:0015H         LINE#         19
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        SMG
+
+Program Size: data=9.0 xdata=0 code=70
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

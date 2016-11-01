@@ -1,0 +1,88 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        11/02/2010  21:29:15  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE pamdeng.obj TO paomadeng
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  pamdeng.obj (PAMDENG)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  paomadeng (PAMDENG)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     0019H     UNIT         ?PR?MAIN?PAMDENG
+            CODE    0819H     000CH     UNIT         ?C_C51STARTUP
+            CODE    0825H     000BH     UNIT         ?PR?_DELAY?PAMDENG
+
+
+
+OVERLAY MAP OF MODULE:   paomadeng (PAMDENG)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?PAMDENG
+
+?PR?MAIN?PAMDENG
+  +--> ?PR?_DELAY?PAMDENG
+
+
+
+SYMBOL TABLE OF MODULE:  paomadeng (PAMDENG)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        PAMDENG
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  C:0800H         PUBLIC        main
+  C:0825H         PUBLIC        _delay
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        x
+  C:0825H         LINE#         3
+BL51 BANKED LINKER/LOCATER V6.00                                                      11/02/2010  21:29:15  PAGE 2
+
+
+  C:0825H         LINE#         4
+  C:0825H         LINE#         5
+  C:082FH         LINE#         6
+  -------         ENDPROC       _DELAY
+  -------         PROC          MAIN
+  C:0800H         LINE#         7
+  C:0800H         LINE#         8
+  C:0800H         LINE#         9
+  C:0803H         LINE#         11
+  C:0803H         LINE#         12
+  C:0803H         LINE#         13
+  C:080AH         LINE#         14
+  C:0810H         LINE#         15
+  C:0814H         LINE#         16
+  C:0817H         LINE#         17
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        PAMDENG
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0024H BYTE ( 1%) *
+******************************************************************************
+
+Program Size: data=9.0 xdata=0 code=51
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

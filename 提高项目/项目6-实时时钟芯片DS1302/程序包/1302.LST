@@ -1,0 +1,159 @@
+C51 COMPILER V8.02   1302                                                                  06/06/2009 21:23:01 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 1302
+OBJECT MODULE PLACED IN 1302.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE 1302.c DEBUG OBJECTEXTEND TABS(3)
+
+line level    source
+
+   1          #include<reg51.h>
+   2          
+   3          #define uchar unsigned char
+   4          uchar dot,time1[6],tt,flash;
+   5          code seven_tab[10] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+   6          code bit_select[6] = {0xfe,0xfd,0xfb,0xf7,0xef,0xdf};
+   7          
+   8          sbit rtc_clk=P1^0;
+   9          sbit rtc_data=P1^1;
+  10          sbit rtc_rst=P1^2;
+  11          
+  12          sbit a0=ACC^0;
+  13          sbit a7=ACC^7;
+  14          
+  15          void write_rtc(uchar date)    //写一字节
+  16          {
+  17   1         uchar i;
+  18   1         ACC=date;
+  19   1         for(i=8;i>0;i--)
+  20   1            {
+  21   2               rtc_data=a0;
+  22   2               rtc_clk=1;
+  23   2               rtc_clk=0;
+  24   2               ACC=ACC>>1; 
+  25   2            }
+  26   1      }
+  27          
+  28          uchar read_rtc()     //读一字节
+  29          {
+  30   1         uchar i;
+  31   1         for(i=8;i>0;i--)
+  32   1            {
+  33   2               ACC=ACC>>1;
+  34   2               a7=rtc_data;
+  35   2               rtc_clk=1;
+  36   2               rtc_clk=0;     
+  37   2            }
+  38   1         return(ACC);   
+  39   1      }
+  40          
+  41          void write1302(uchar address,uchar date)  //写1302数据
+  42          {
+  43   1         rtc_rst=0;
+  44   1         rtc_clk=0;
+  45   1         rtc_rst=1;
+  46   1         write_rtc(address);
+  47   1         write_rtc(date);
+  48   1         rtc_clk=1;
+  49   1         rtc_rst=0;
+  50   1      }
+  51          uchar read1302(uchar address)          //读1302数据
+  52          {
+  53   1         uchar temp;
+  54   1         rtc_rst=0;
+  55   1         rtc_clk=0;
+C51 COMPILER V8.02   1302                                                                  06/06/2009 21:23:01 PAGE 2   
+
+  56   1         rtc_rst=1;
+  57   1         write_rtc(address);
+  58   1         temp=read_rtc();
+  59   1         rtc_clk=1;
+  60   1         rtc_rst=0;
+  61   1         return(temp);
+  62   1      }
+  63          void init1302()      //1302初始化
+  64          {
+  65   1         write1302(0x8e,0x00);   //写操作
+  66   1      // write1302(0x90,0xa5);
+  67   1         write1302(0x80,0x56);   //写秒
+  68   1         write1302(0x82,0x34);   //写分
+  69   1         write1302(0x84,0x12);   //写时
+  70   1         write1302(0x86,0x25);   //写月
+  71   1         write1302(0x88,0x08);   //写日
+  72   1         write1302(0x8a,0x05);   //写星期
+  73   1         write1302(0x8c,0x09);   //写年
+  74   1         write1302(0x8e,0x80);   //写保护
+  75   1      }
+  76          void get_time()            //获取1302的时间数据（时、分、秒），存入time1数组中
+  77          {
+  78   1         uchar d;
+  79   1         d=read1302(0x81);
+  80   1         time1[0]=d&0x0f;
+  81   1         time1[1]=(d>>4)&0x0f;   
+  82   1         d=read1302(0x83);
+  83   1         time1[2]=d&0x0f;
+  84   1         time1[3]=(d>>4)&0x0f;   
+  85   1         d=read1302(0x85);
+  86   1         time1[4]=d&0x0f;
+  87   1         time1[5]=(d>>4)&0x0f;   
+  88   1      }
+  89          void time0() interrupt 1    //利用中断对数码管上显示的数据进行刷新
+  90          {
+  91   1         uchar i;
+  92   1         TR0=0;
+  93   1         TH0=(65536-5000)/256;   
+  94   1         TL0=(65536-5000)%256;
+  95   1         TR0=1;
+  96   1         tt++;
+  97   1         if(tt==100)
+  98   1         {
+  99   2            tt=0;
+ 100   2            dot=!dot;   
+ 101   2         }
+ 102   1         get_time();
+ 103   1         flash=0x80*dot;
+ 104   1         flash=flash|0x7f;
+ 105   1         P0=0xff;
+ 106   1         P2=bit_select[i];
+ 107   1         if(i==2 || i==4)
+ 108   1         P0=seven_tab[time1[i]]&flash;
+ 109   1         else
+ 110   1         P0=seven_tab[time1[i]];
+ 111   1         i++;
+ 112   1         if(i==6)i=0;         
+ 113   1      }
+ 114          void initmcu()       //mcu初始化
+ 115          {
+ 116   1         TMOD=0x01;
+ 117   1         TH0=(65536-5000)/256;   
+C51 COMPILER V8.02   1302                                                                  06/06/2009 21:23:01 PAGE 3   
+
+ 118   1         TL0=(65536-5000)%256;
+ 119   1         TR0=1;
+ 120   1         ET0=1;
+ 121   1         EA=1;
+ 122   1      }
+ 123          void main()
+ 124          {
+ 125   1         initmcu();
+ 126   1         init1302();
+ 127   1         while(1)
+ 128   1            {
+ 129   2               
+ 130   2            }
+ 131   1         
+ 132   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    368    ----
+   CONSTANT SIZE    =     32    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      9       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

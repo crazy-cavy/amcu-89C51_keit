@@ -1,0 +1,97 @@
+C51 COMPILER V8.02   TEXT1                                                                 11/05/2010 20:25:15 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE TEXT1
+OBJECT MODULE PLACED IN Text1.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Text1.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /**************************************************************************/
+   2          //            通过定时器中断，实现六位数码管的动态显示
+   3          /**************************************************************************/
+   4          #include<reg51.h>
+   5          #define uchar unsigned char
+   6          #define uint unsigned int
+   7          uchar j = 0, sec,min,hour;
+   8          uint i;
+   9          bit flash;
+  10          sbit dop = P0^7;   //小数点段
+  11          code uchar seven_seg[] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+  12          code uchar seven_bit[] = {0xfe,0xfd,0xfb,0xf7,0xef,0xdf};
+  13          void timer0_init(void)    //初始化
+  14          {
+  15   1              TMOD = 0x01;
+  16   1              TH0 = 0xf8;           //(65536 - 2000)/ 256;
+  17   1              TL0 = 0x30;           //(65536 - 2000)% 256;
+  18   1              TR0 = 1;
+  19   1              EA  = 1;
+  20   1              ET0 = 1;
+  21   1      }
+  22          void timer0_isr(void) interrupt 1                 //中断
+  23          {
+  24   1              TR0 = 0;
+  25   1              EA = 0;
+  26   1              TH0 = 0xf8;
+  27   1              TL0 = 0x30;
+  28   1              TR0 = 1;
+  29   1              EA = 1;
+  30   1              P0 = 0xff;              //让数码管不显示内容，防止信号串扰
+  31   1              i++;
+  32   1              if(i >= 500)    //刚好1秒
+  33   1              {
+  34   2                      i = 0;
+  35   2                      sec++;
+  36   2                      flash = !flash; //2秒改变一次状态，如果想让flash1秒改变一次状态怎样做？
+  37   2              }
+  38   1              if(sec >= 60)
+  39   1              {
+  40   2                      sec = 0;
+  41   2                      min++;
+  42   2              }
+  43   1              if(min >= 60)
+  44   1              {
+  45   2                      min = 0;
+  46   2                      hour++;
+  47   2              }
+  48   1              if(hour >= 24)
+  49   1                      hour = 0; 
+  50   1              switch(j)
+  51   1              {
+  52   2                      case 0: P0 = seven_seg[sec % 10]; break;        //显示秒个位
+  53   2                      case 1: P0 = seven_seg[sec / 10]; break;
+  54   2                      case 2: P0 = seven_seg[min % 10];dop = flash;break; 
+  55   2                      case 3: P0 = seven_seg[min / 10]; break;
+C51 COMPILER V8.02   TEXT1                                                                 11/05/2010 20:25:15 PAGE 2   
+
+  56   2                      case 4: P0 = seven_seg[hour % 10];dop = flash; ;break;
+  57   2                      case 5: P0 = seven_seg[hour / 10]; break;       
+  58   2              }
+  59   1              P2 = seven_bit[j];      //每中断一次只显示一位数码管，显示停留时间为中断间隔
+  60   1              j ++;
+  61   1              if(j >= 6)      
+  62   1              j=0;  //循环变量清零
+  63   1      }
+  64          void main(void)
+  65          {
+  66   1              sec = 30;
+  67   1              min = 30;
+  68   1              hour = 8;
+  69   1              P2 = 0xff;
+  70   1              timer0_init();
+  71   1              while(1);
+  72   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    235    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

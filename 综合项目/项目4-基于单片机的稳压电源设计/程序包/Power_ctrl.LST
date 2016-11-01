@@ -1,0 +1,286 @@
+C51 COMPILER V8.02   POWER_CTRL                                                            11/05/2010 09:47:33 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE POWER_CTRL
+OBJECT MODULE PLACED IN Power_ctrl.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Power_ctrl.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <REG51.H>
+   2          #include "intrins.h"
+   3          #include "AT24C04.h"
+   4          
+   5          #define  uchar unsigned char
+   6          #define  uint unsigned int
+   7          
+   8          uchar code  LED[10] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+   9          uchar code Bit_sel[4] = {0x08,0x04,0x02,0x01 }; //各个数码管对应的位选数据
+  10          
+  11          sbit DIO = P1^0;                //数据线
+  12          sbit CS = P1^1;                 //片选
+  13          sbit CLK = P1^2;                //io口时钟
+  14          
+  15          sbit SCS = P1^4;
+  16          sbit SDATA = P1^5;
+  17          sbit SCLK = P1^3;
+  18          
+  19          sbit ADD = P3^0;
+  20          sbit SUB = P3^1;
+  21          sbit Pre_read = P3^2;
+  22          sbit Store = P3^3;
+  23          
+  24          uint qian,bai,shi,ge;  //用于显示数码管的 千，百，十，个 等四位的显示
+  25          uint val,num;              //val 是用于输入DA  的数据，num是用于判断是不是长按的
+  26          uint cp;                           //计数的变量
+  27          uchar key_stat;
+  28          uchar add_stat,sub_stat;
+  29          uchar st_flag,pre_flag;
+  30          
+  31          void delay(uint x)              //微妙级是延时函数
+  32          {
+  33   1              while(x--)
+  34   1                      _nop_();
+  35   1      }
+  36          
+  37          /**********************************************
+  38                  函数名称：deal
+  39                  函数作用：处理AD的返回值
+  40                  函数参数：无
+  41                  函数返回值：无
+  42          **********************************************/                                                                                    
+  43          void deal(uint num)       //显示程序
+  44          {       
+  45   1              qian=num/1000;        //千，百，十，个处理
+  46   1              bai=num/100%10;
+  47   1              shi=num/10%10;
+  48   1              ge=num%10;
+  49   1      } 
+  50          
+  51          /**********************************************
+  52                  函数名称：TL549_AD()
+  53                  函数作用：返回AD的返回值
+  54                  函数参数：无
+  55                  函数返回值：data_ad
+C51 COMPILER V8.02   POWER_CTRL                                                            11/05/2010 09:47:33 PAGE 2   
+
+  56          **********************************************/ 
+  57          uint TL549_AD()             //TLC549处理
+  58          {
+  59   1              uchar i;
+  60   1              uint data_ad = 0;
+  61   1              CS = 1;                         //初始化，启动
+  62   1              CLK = 0;
+  63   1              CS = 0;
+  64   1              _nop_();                    
+  65   1              for(i = 0;i < 8;i++)    //读取采集数据，读取的是上一次采集数据
+  66   1              {
+  67   2                      CLK = 1;         
+  68   2                      if(DIO)data_ad |= 0x01;
+  69   2                      CLK = 0;  
+  70   2                      data_ad = data_ad << 1;  
+  71   2              }       
+  72   1              CS = 1;
+  73   1              data_ad = data_ad  * (500/ 256);   
+  74   1              return(data_ad); 
+  75   1      }
+  76          
+  77          /**********************************************
+  78                  函数名称：TLC5615_DA(uint da)
+  79                  函数作用：TLC5615_DA 将da转换后模拟输出
+  80                  函数参数：da
+  81                  函数返回值：无
+  82          **********************************************/ 
+  83          void TLC5615_DA(uint da) //     TLC5615 的DA 转换函数
+  84          {
+  85   1              uchar i;
+  86   1              da<<=6;
+  87   1      
+  88   1              SCS=0;
+  89   1              SCLK=0;
+  90   1      
+  91   1              for (i=0;i<12;i++)
+  92   1              {
+  93   2                      SDATA=(bit)(da&0x8000);
+  94   2                      SCLK=1;
+  95   2                      da<<=1;
+  96   2                      SCLK=0;
+  97   2              }
+  98   1      
+  99   1              SCS=1;
+ 100   1              SCLK=0;
+ 101   1              for (i=0;i<12;i++);
+ 102   1      }
+ 103          /**********************************************
+ 104                  函数名称：key_scan()
+ 105                  函数作用：处理那些独立键盘
+ 106                  函数参数：无
+ 107                  函数返回值：无
+ 108          **********************************************/ 
+ 109          void key_scan()
+ 110          {
+ 111   1              if (ADD == 0)                                              // ADD 按键的键盘处理函数
+ 112   1              {
+ 113   2                      delay(10);
+ 114   2                      if (ADD == 0)
+ 115   2                      {
+ 116   3                              add_stat = 1;
+ 117   3                              num ++;
+C51 COMPILER V8.02   POWER_CTRL                                                            11/05/2010 09:47:33 PAGE 3   
+
+ 118   3                      }
+ 119   2                      else
+ 120   2                      {
+ 121   3                              add_stat = 0;
+ 122   3                              num = 0;
+ 123   3                      }
+ 124   2                      //此处判断是不是长按，长按的话 使其步进值 加大
+ 125   2                      if (ADD == 0 && add_stat == 1 && num >= 300)  
+ 126   2                      {
+ 127   3                              val += 5;
+ 128   3                              num = 0;
+ 129   3                      }
+ 130   2                      if (ADD == 1 && add_stat == 1)
+ 131   2                      {
+ 132   3                              val ++;
+ 133   3                              num = 0;
+ 134   3                              add_stat = 0;
+ 135   3                      }
+ 136   2                      if (val >= 1024)
+ 137   2                      {
+ 138   3                              val = 1023;
+ 139   3                      }
+ 140   2              }
+ 141   1      
+ 142   1              if (SUB == 0)                                                   //SUB 按键的键盘处理函数
+ 143   1              {
+ 144   2                      delay(10);
+ 145   2                      if (SUB == 0)
+ 146   2                      {
+ 147   3                              sub_stat = 1;
+ 148   3                              num ++;
+ 149   3                      }
+ 150   2                      if (SUB == 0 && sub_stat == 1 && num >= 300)
+ 151   2                      {
+ 152   3                              val -= 5;
+ 153   3                              num = 0;
+ 154   3                      }
+ 155   2                      if (SUB == 1 && sub_stat == 1)
+ 156   2                      {
+ 157   3                              val --;
+ 158   3                              num = 0;
+ 159   3                              sub_stat = 0;
+ 160   3                      }
+ 161   2                      if (val <= 0)
+ 162   2                              val = 0;
+ 163   2              }
+ 164   1                                                                              
+ 165   1              if (Pre_read == 0)                                              //预读数据的 键盘处理函数
+ 166   1              {
+ 167   2                      delay(100);
+ 168   2                      if (Pre_read == 0)
+ 169   2                      {
+ 170   3                              pre_flag = 1;
+ 171   3                      }
+ 172   2                      if (Pre_read == 1 &&pre_flag == 1 )
+ 173   2                      {
+ 174   3                              pre_flag = 0;
+ 175   3                              val = read_24C04(20);                   //从AT24C04中的地址20 中读出预存储的数据
+ 176   3                      }
+ 177   2              }
+ 178   1      
+ 179   1              if (Store == 0)                                         //保存数值 按键的键盘处理函数
+C51 COMPILER V8.02   POWER_CTRL                                                            11/05/2010 09:47:33 PAGE 4   
+
+ 180   1              {
+ 181   2                      delay(100);
+ 182   2                      if (Store == 0)
+ 183   2                      {
+ 184   3                              st_flag = 1;
+ 185   3                      }
+ 186   2                      if (Store == 1 && st_flag == 1)
+ 187   2                      {
+ 188   3                              st_flag = 0;
+ 189   3                              write_24C04(20,val);             //向AT24C04中的地址20 写入存储的数据
+ 190   3                      }
+ 191   2              }
+ 192   1      }
+ 193          /**********************************************
+ 194                  函数名称：timer0_init (void)
+ 195                  函数作用：初始化定时器0，并设置
+ 196                  函数参数：无
+ 197                  函数返回值：无
+ 198          **********************************************/ 
+ 199          void timer0_init (void)                         // timer0中断初始化函数
+ 200          {
+ 201   1              EA = 0;                      
+ 202   1              TMOD = 0x01;             
+ 203   1              TR0 = 0;                      
+ 204   1              TL0 = (65536-5000)%256;          //设置计数器初值
+ 205   1              TH0 = (65536-5000)/256;                  
+ 206   1              PT0 = 1;                      
+ 207   1              ET0 = 1;                     
+ 208   1              EA = 1;                      
+ 209   1              TR0 = 1;                      
+ 210   1      }
+ 211          /**********************************************
+ 212                  函数名称：main(void)
+ 213                  函数作用：main主函数入口
+ 214                  函数参数：无
+ 215                  函数返回值：无
+ 216          **********************************************/                                                 
+ 217          void main(void)                          //主程序
+ 218          {  
+ 219   1              timer0_init();                  //初始化定时器0
+ 220   1              init_24C04();                   //初始化AT24C04
+ 221   1              while(1)
+ 222   1              { 
+ 223   2                      key_scan();                     //调用键盘扫描函数
+ 224   2                      TLC5615_DA(val);        //处理键盘发送过来的值
+ 225   2              } 
+ 226   1      }
+ 227          
+ 228          /**********************************************
+ 229                  函数名称：timer0_isr(void)  interrupt 1
+ 230                  函数作用：定时器0，方式1，的中断服务子程序
+ 231                  函数参数：无
+ 232                  函数返回值：无
+ 233          **********************************************/ 
+ 234          void timer0_isr(void)  interrupt 1              // timer0中断服务函数
+ 235          {
+ 236   1                                                                      //数码管的位选变量
+ 237   1              TR0 = 0;                                        //停止计数
+ 238   1              TL0 = (65536-5000)%256;                                 //重新载入计数器初值
+ 239   1              TH0 = (65536-5000)/256; 
+ 240   1              cp++;                                   //位循环变量加1
+ 241   1              if(cp >= 4)
+C51 COMPILER V8.02   POWER_CTRL                                                            11/05/2010 09:47:33 PAGE 5   
+
+ 242   1                      cp = 0; 
+ 243   1              deal(TL549_AD());                       //循环显示1次，j清零
+ 244   1              TR0 = 1;
+ 245   1      
+ 246   1              P0=0xff;  //与j对应，P2输出数码管的位选信号
+ 247   1              switch(cp)
+ 248   1              {
+ 249   2                      case 0: P0 = LED[ge]; break;    
+ 250   2                      case 1: P0 = LED[shi]; break;           
+ 251   2                      case 2: P0 = LED[bai]&0x7f; break;
+ 252   2                      case 3: P0 = LED[qian]; break;          
+ 253   2              } 
+ 254   1              P2 = Bit_sel[cp]; 
+ 255   1      }  
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    893    ----
+   CONSTANT SIZE    =     14    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     19       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

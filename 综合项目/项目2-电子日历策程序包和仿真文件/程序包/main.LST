@@ -1,0 +1,585 @@
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND TABS(3)
+
+line level    source
+
+   1          /*********************************************************/
+   2          /*主要设计者：                                           */
+   3          /*完成日期：2010年5月15日                                */
+   4          /*********************************************************/
+   5          #include <reg52.h>
+   6          
+   7          #include "12864.h"
+*** WARNING C275 IN LINE 587 OF 12864.H: expression with possibly no effect
+*** WARNING C275 IN LINE 607 OF 12864.H: expression with possibly no effect
+*** WARNING C275 IN LINE 627 OF 12864.H: expression with possibly no effect
+*** WARNING C275 IN LINE 647 OF 12864.H: expression with possibly no effect
+   8          #include "model.h"
+   9          #include "ds1302.h"
+  10          #include "one-wire.h"
+  11          #include "lunar.h"
+  12          #include "input_080627.h"
+  13          //#include "yinli.h"
+  14          
+  15          #define uchar unsigned char
+  16          #define uint unsigned int
+  17          
+  18          #define NoUpLine  1
+  19          #define UpLine    0
+  20          #define NoUnderLine 1
+  21          #define UnderLine 0
+  22          
+  23          #define FALSE  0
+  24          #define TRUE    1
+  25          
+  26          
+  27          uchar bdata gTmp;
+  28          sbit t0 = gTmp^0;
+  29          sbit t1 = gTmp^1;
+  30          sbit t2 = gTmp^2;
+  31          sbit t3 = gTmp^3;
+  32          sbit t4 = gTmp^4;
+  33          sbit t5 = gTmp^5;
+  34          sbit t6 = gTmp^6;
+  35          sbit t7 = gTmp^7;
+  36          
+  37          
+  38          uchar dispBuf[7];
+  39          uchar T0_Count=0,Tmp_Count=0;
+  40          bit T0_Flag,Tmp_Flag,Flash_Flag;
+  41          
+  42          SYSTIME sys;         //系统日期
+  43          SPDATE SpDat;        //农历日期
+  44          
+  45          //设置时间的标志
+  46          bit Hour_Flag=TRUE,Min_Flag=TRUE,Sec_Flag=TRUE;
+  47          bit Year_Flag=TRUE,Mon_Flag=TRUE,Day_Flag=TRUE;
+  48          
+  49          uchar State_Set=0;     //设置状态 (用来区分此时是在设置时，分，秒，日，月，年)   
+  50          
+  51          bit   State_Flag=FALSE,Inc_Flag=FALSE,Dec_Flag=FALSE; //用来标志三个按键是否按下。
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 2   
+
+  52          
+  53          uchar code Mon2[2][13]={0,31,28,31,30,31,30,31,31,30,31,30,31,
+  54                        0,31,29,31,30,31,30,31,31,30,31,30,31};
+  55          
+  56          /***********************************************************
+  57             cDat:    要显示的数
+  58             X:       行数 0~7
+  59             Y:          列数 0~127
+  60             show_flag:  是否反白显示，0反白，1不反白 
+  61             upline:  上划线, 0表示带上划线
+  62             underline:  下划线, 0表示带下划线
+  63             返回:       无
+  64          ************************************************************/
+  65          void LCD_ShowTime(char cDat,uchar X,uchar Y,bit show_flag,bit up,bit under)
+  66          {
+  67   1         uchar s[2];
+  68   1            s[0]=cDat/10+'0';
+  69   1         s[1]=cDat%10+'0';
+  70   1         en_disp(X,Y,2,Asc,s,show_flag,up,under);
+  71   1      }
+  72          
+  73          /***********************************************************
+  74          // 函数名:      Show_YMD()
+  75          // 入口参数:    void 
+  76          // 出口参数：　 void 
+  77          // 功能:        显示公历与农历的年、月、日、星期
+  78          // 说明:        普通模式每天刷新一次
+  79          //          设置模式每次循环刷新一次
+  80          
+  81          ***********************************************************/
+  82          void Show_YMD()      //显示年月日星期
+  83          {
+  84   1         uchar uiTempDat;
+  85   1            uiTempDat=RDS1302(0x88|0x01);
+  86   1         sys.cMon=((uiTempDat&0x1f)>>4)*10+(uiTempDat&0x0f);   
+  87   1         LCD_ShowTime(sys.cMon,2,5,Mon_Flag,NoUpLine,NoUnderLine);          //月
+  88   1         hz_disp(4,5,1,uMod[1],1,NoUpLine,NoUnderLine);
+  89   1         Show16X32(2,27,ucNum3216[sys.cDay/10],Day_Flag);
+  90   1         Show16X32(2,43,ucNum3216[sys.cDay%10],Day_Flag);                //年
+  91   1      
+  92   1         /////////////////////////////////////////////////////////////////////
+  93   1      
+  94   1         hz_disp(6,8,2,ucLunar[13],1,UpLine,UnderLine);
+  95   1         if(sys.cWeek==7)
+  96   1         hz_disp(6,40,1,uMod[2],1,UpLine,UnderLine);               //星期日
+  97   1         else
+  98   1          hz_disp(6,40,1,ucLunar[sys.cWeek],1,UpLine,UnderLine);      //星期
+  99   1      
+ 100   1         /////////////////////////////////////////////////////////////////////            
+ 101   1                                       
+ 102   1          LCD_ShowTime(20,0,9,1,UpLine,UnderLine);
+ 103   1         LCD_ShowTime(sys.cYear,0,25,Year_Flag,UpLine,UnderLine);
+ 104   1          hz_disp(0,41,1,uMod[0],1,UpLine,UnderLine);               //年
+ 105   1                     
+ 106   1      
+ 107   1         ////////////////////////////////////////////////////
+ 108   1      
+ 109   1         SpDat=GetSpringDay(sys.cYear,sys.cMon,sys.cDay);   //得到农历日期
+ 110   1      
+ 111   1      //显示农历日期
+ 112   1          if(SpDat.cMon==1)                                    //农历月
+ 113   1           hz_disp(4,64,1,ucLunar[15],1,UpLine,NoUnderLine);            //"正"
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 3   
+
+ 114   1         else if(SpDat.cMon==11)
+ 115   1           hz_disp(4,64,1,ucLunar[16],1,UpLine,NoUnderLine);            //"冬"
+ 116   1         else if(SpDat.cMon==12)
+ 117   1           hz_disp(4,64,1,ucLunar[17],1,UpLine,NoUnderLine);            //"腊"
+ 118   1         else
+ 119   1           hz_disp(4,63,1,ucLunar[SpDat.cMon],1,UpLine,NoUnderLine);    //"二"~"十"
+ 120   1      
+ 121   1      
+ 122   1      
+ 123   1          if(SpDat.cDay/10==1 && SpDat.cDay%10>0)                 //显示"十" 例如"十四"而不是"一四"
+ 124   1          hz_disp(4,95,1,ucLunar[10],1,UpLine,NoUnderLine);
+ 125   1          else if(SpDat.cDay/10==2 && SpDat.cDay%10>0)                  //显示"廿" 例如"廿三"而不是"二四"
+ 126   1          hz_disp(4,95,1,ucLunar[19],1,UpLine,NoUnderLine);
+ 127   1          else
+ 128   1          hz_disp(4,95,1,ucLunar[SpDat.cDay/10],1,UpLine,NoUnderLine);  //正常显示数字
+ 129   1      
+ 130   1         if(!(SpDat.cDay%10))    //                         //"十"
+ 131   1          hz_disp(4,111,1,ucLunar[10],1,UpLine,NoUnderLine);
+ 132   1         else                                            //正常数字
+ 133   1          hz_disp(4,111,1,ucLunar[SpDat.cDay%10],1,UpLine,NoUnderLine);
+ 134   1      
+ 135   1          ////////////////////////////////////////////////////
+ 136   1      //显示生肖
+ 137   1          hz_disp(0,104,1,SX[(uint)(2000+SpDat.cYear)%12],1,UpLine,UnderLine);   //生肖
+ 138   1      
+ 139   1          ////////////////////////////////////////////////////
+ 140   1      //显示天干地支
+ 141   1          hz_disp(2,95,1,TianGan[(uint)(2000+SpDat.cYear)%10],1,NoUpLine,NoUnderLine); //天干
+ 142   1          hz_disp(2,111,1,DiZhi[(uint)(2000+SpDat.cYear)%12],1,NoUpLine,NoUnderLine);  //地支
+ 143   1      
+ 144   1      }
+ 145          
+ 146          /**************************************************************
+ 147          // 函数名:      LCD_ShowTemp()
+ 148          // 入口参数:    void 
+ 149          // 出口参数：　 void 
+ 150          // 功能:        采集温度并显示
+ 151          // 说明:        30秒更新一次
+ 152          
+ 153          ***************************************************************/
+ 154          void LCD_ShowTemp()
+ 155          {
+ 156   1         uchar datTm[2];
+ 157   1         
+ 158   1         float temp;
+ 159   1         uchar buftmp;
+ 160   1         
+ 161   1               
+ 162   1         if(!Tmp_Flag) return;
+ 163   1         Tmp_Flag=FALSE;
+ 164   1      
+ 165   1         DS18B20_Init();
+ 166   1         DS18B20_RomCmd(0xcc);   //Skip Rom command;
+ 167   1         Delay_Xms(20);
+ 168   1         DS18B20_MemCmd(0x44);   //Convert T command;
+ 169   1         
+ 170   1         DS18B20_Init();
+ 171   1         DS18B20_RomCmd(0xcc);
+ 172   1         DS18B20_MemCmd(0xbe);
+ 173   1         DS18B20_ReadDat(2,datTm);
+ 174   1            
+ 175   1         gTmp = datTm[0];
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 4   
+
+ 176   1         temp = (uchar)t0 * 0.0625 + (uchar)t1 * 0.125 + (uchar)(t2) * 0.25 + (uchar)(t3) * 0.5;
+ 177   1         buftmp = (uchar)(temp*10);
+ 178   1         dispBuf[2] = '.';
+ 179   1         dispBuf[3] = buftmp + '0';
+ 180   1         
+ 181   1         buftmp = (uchar)t4 + (uchar)t5*2 + (uchar)t6*4 + (uchar)t7*8;
+ 182   1         gTmp = datTm[1];
+ 183   1         gTmp &= 0x07;
+ 184   1         buftmp += (gTmp * 16);
+ 185   1         dispBuf[0] = (buftmp/10) + '0';
+ 186   1         dispBuf[1] = (buftmp%10) + '0';
+ 187   1         
+ 188   1         dispBuf[4] = 0xdf;      //摄氏度；
+ 189   1         dispBuf[2] = 'C';
+ 190   1         en_disp(0,65,2,Asc,dispBuf,1,UpLine,UnderLine); 
+ 191   1      }
+ 192          
+ 193          
+ 194          /***********************************************************
+ 195          // 函数名:      LCD_ShowWNL()
+ 196          // 入口参数:    void 
+ 197          // 出口参数：　 void 
+ 198          // 功能:        显示万年历
+ 199          // 说明:        
+ 200          
+ 201          ***********************************************************/
+ 202          void LCD_ShowWNL()
+ 203          {
+ 204   1         
+ 205   1      
+ 206   1         LCD_ShowTime(sys.cSec,6,111,Sec_Flag,UpLine,UnderLine);      //秒   每次循环钟刷新一次
+ 207   1      
+ 208   1         if(!sys.cSec || State_Set)                           //分   在普通模式时每分钟刷新一次
+ 209   1         LCD_ShowTime(sys.cMin,6,87,Min_Flag,UpLine,UnderLine);       //     在设置模式时每次循环刷新一次
+ 210   1          
+ 211   1         if(!sys.cSec && !sys.cMin || State_Set)                   //时   在普通模式时每小时刷新一次
+ 212   1          LCD_ShowTime(sys.cHour,6,63,Hour_Flag,UpLine,UnderLine);     //     在设置模式时每次循环刷新一次
+ 213   1         
+ 214   1         if(!sys.cSec && !sys.cMin && !sys.cHour || State_Set )       //公历农历的年、月、日、星期
+ 215   1         {                                             //普通模式每天刷新一次
+ 216   2            Show_YMD();                                   //设置模式每次循环刷新一次
+ 217   2            if(State_Set==7) State_Set=0;
+ 218   2         }  
+ 219   1      }
+ 220          
+ 221          /***********************************************************
+ 222          // 函数名:      CAL_Init()
+ 223          // 入口参数:    void 
+ 224          // 出口参数：　 void 
+ 225          // 功能:        日期初始化
+ 226          // 说明:        星期通过计算得到
+ 227          
+ 228          ***********************************************************/
+ 229          void CAL_Init()
+ 230          {
+ 231   1         sys.cYear=0x09;
+ 232   1         sys.cMon=0x05;
+ 233   1         sys.cDay=0x05;
+ 234   1         sys.cHour=0x10;
+ 235   1         sys.cMin=0x27;
+ 236   1         sys.cSec=0x00;
+ 237   1         sys.cWeek=GetWeekDay(sys.cYear,sys.cMon,sys.cDay);
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 5   
+
+ 238   1      }
+ 239          
+ 240          
+ 241          /***********************************************************
+ 242          // 函数名:      SFR_Init()
+ 243          // 入口参数:    void 
+ 244          // 出口参数：　 void 
+ 245          // 功能:        寄存器初始化
+ 246          // 说明:        定时器0控制温度采集，定时器1控制按键扫描
+ 247          
+ 248          ***********************************************************/
+ 249          void SFR_Init()
+ 250          {
+ 251   1         T0_Flag=FALSE;
+ 252   1         Tmp_Flag=TRUE;
+ 253   1         Flash_Flag=FALSE;
+ 254   1         TMOD=0x11;
+ 255   1         ET0=1;
+ 256   1         ET1=1;
+ 257   1         TH0= (-50000)/256;
+ 258   1         TL0= (-50000)%256;
+ 259   1         TH1= (-10000)/256;
+ 260   1         TL1= (-10000)%256;
+ 261   1         EA=1;
+ 262   1      }
+ 263          
+ 264          /***********************************************************
+ 265          // 函数名:      GUI_Init()
+ 266          // 入口参数:    void 
+ 267          // 出口参数：　 void 
+ 268          // 功能:        图形界面初始化
+ 269          // 说明:        一些永远不耍更新的图形(如线条，"年"、"月"、"日"等)
+ 270                      只是在初始化时写入，中间过程不再更新。
+ 271          
+ 272          ***********************************************************/
+ 273          void GUI_Init()
+ 274          {
+ 275   1          uint i,j;
+ 276   1          ////////进入界面///////////
+ 277   1          LCD12864_init();
+ 278   1          ClearLCD();
+ 279   1          LCD_ShowTemp();     //在显示图片之前启动温度转换
+ 280   1          img12864_disp(uBmp);   //显示图片
+ 281   1          
+ 282   1          for(i=0;i<10;i++)
+ 283   1          for(j=0;j<32767;j++);
+ 284   1                               
+ 285   1          ClearLCD();
+ 286   1      
+ 287   1          /////////描绘框架//////////
+ 288   1          Rect(0,0,127,63,1);
+ 289   1          Line(62,0,62,62,1);
+ 290   1          Line(0,48,127,48,1);
+ 291   1          Line(0,15,127,15,1);
+ 292   1          Line(24,15,24,48,1);
+ 293   1      
+ 294   1          Line(63,32,128,32,1);
+ 295   1          Line(97,0,97,15,1);
+ 296   1          //Line(24,15,24,48,1);
+ 297   1      
+ 298   1          ////////时间初始化//////////
+ 299   1          SetTime(sys);             //设置时间
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 6   
+
+ 300   1          GetTime(&sys);               //获得时间
+ 301   1          
+ 302   1          Show_YMD();
+ 303   1      
+ 304   1          LCD_ShowTime(sys.cSec,6,111,Sec_Flag,UpLine,UnderLine);
+ 305   1          en_disp(6,103,1,Asc,":",1,UpLine,UnderLine);
+ 306   1          LCD_ShowTime(sys.cMin,6,87,Min_Flag,UpLine,UnderLine); 
+ 307   1          en_disp(6,79,1,Asc,":",1,UpLine,UnderLine);  
+ 308   1           LCD_ShowTime(sys.cHour,6,63,Hour_Flag,UpLine,UnderLine);
+ 309   1      
+ 310   1          hz_disp(2,64,1,ucLunar[11],1,NoUpLine,NoUnderLine);     //"农"
+ 311   1          hz_disp(2,80,1,ucLunar[12],1,NoUpLine,NoUnderLine);     //"历"
+ 312   1          hz_disp(4,79,1,uMod[1],1,UpLine,NoUnderLine);           //"月"
+ 313   1          ////////显示初始化温度//////
+ 314   1          en_disp(0,65,2,Asc,dispBuf,1,UpLine,UnderLine); 
+ 315   1          hz_disp(0,81,1,ucLunar[18],1,UpLine,UnderLine); 
+ 316   1      }
+ 317          
+ 318          
+ 319          /***********************************************************
+ 320          // 函数名:      DecToBCD()
+ 321          // 入口参数:    void 
+ 322          // 出口参数：　 void 
+ 323          // 功能:        把时间由10进制转为BCD
+ 324          // 说明:        DS1302以BCD存储
+ 325          
+ 326          ***********************************************************/
+ 327          void DecToBCD()
+ 328          {
+ 329   1         sys.cHour=(((sys.cHour)/10)<<4)+((sys.cHour)%10);
+ 330   1         sys.cMin=(((sys.cMin)/10)<<4)+((sys.cMin)%10);
+ 331   1         sys.cSec=((sys.cSec/10)<<4)+((sys.cSec)%10);
+ 332   1         sys.cYear=((sys.cYear/10)<<4)+((sys.cYear)%10);
+ 333   1         sys.cMon=((sys.cMon/10)<<4)+((sys.cMon)%10);
+ 334   1         sys.cDay=((sys.cDay/10)<<4)+((sys.cDay)%10);
+ 335   1      }
+ 336          
+ 337          /***********************************************************
+ 338          // 函数名:      Time_Set()
+ 339          // 入口参数:    void 
+ 340          // 出口参数：　 void 
+ 341          // 功能:        时间设置
+ 342          // 说明:        具体的时间设置
+ 343          
+ 344          ***********************************************************/
+ 345          void Time_Set()
+ 346          {
+ 347   1            
+ 348   1         if(State_Flag)             //设置键按下
+ 349   1         {
+ 350   2            State_Flag=FALSE;
+ 351   2            State_Set++;
+ 352   2            //State_Set%=7;
+ 353   2            if(State_Set==8) State_Set=0;
+ 354   2         }
+ 355   1      
+ 356   1         Hour_Flag=TRUE;Min_Flag=TRUE;Sec_Flag=TRUE;
+ 357   1          Year_Flag=TRUE;Mon_Flag=TRUE;Day_Flag=TRUE;
+ 358   1      
+ 359   1         switch(State_Set)               //设置类型
+ 360   1         {
+ 361   2               case 0:                 //无设置
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 7   
+
+ 362   2               
+ 363   2               break;
+ 364   2                
+ 365   2               case 1:              //设置时
+ 366   2               Hour_Flag=FALSE;
+ 367   2               break;
+ 368   2      
+ 369   2               case 2:                 //设置分
+ 370   2               Min_Flag=FALSE;
+ 371   2               break;
+ 372   2         
+ 373   2         
+ 374   2               case 3:               //设置秒
+ 375   2               Sec_Flag=FALSE;
+ 376   2               break;
+ 377   2         
+ 378   2               case 4:               //设置天
+ 379   2                Day_Flag=FALSE;
+ 380   2               break;
+ 381   2         
+ 382   2               case 5:
+ 383   2                Mon_Flag=FALSE;         //设置月
+ 384   2               break;
+ 385   2         
+ 386   2               case 6:
+ 387   2                Year_Flag=FALSE;     //设置年
+ 388   2                break;
+ 389   2      
+ 390   2               case 7:               //无动作，设置此值为让"年"的反白消失。
+ 391   2      
+ 392   2               break;
+ 393   2           }      
+ 394   1           
+ 395   1         if(Inc_Flag)                 //加键被按下
+ 396   1         {   
+ 397   2            Inc_Flag=FALSE;
+ 398   2            switch(State_Set)
+ 399   2            {
+ 400   3               case 0:
+ 401   3               
+ 402   3               break;
+ 403   3         
+ 404   3               case 1:                  //小时加
+ 405   3               sys.cHour++;
+ 406   3               (sys.cHour)%=24;
+ 407   3               break;
+ 408   3         
+ 409   3               case 2:                  //分加
+ 410   3               sys.cMin++;
+ 411   3               sys.cMin%=60;
+ 412   3               break;
+ 413   3         
+ 414   3               case 3:               //秒加
+ 415   3                sys.cSec++;
+ 416   3               sys.cSec%=60;
+ 417   3               break;
+ 418   3         
+ 419   3               case 4:               //天加
+ 420   3               (sys.cDay)=(sys.cDay%Mon2[YearFlag(sys.cYear)][sys.cMon])+1;         
+ 421   3               break;
+ 422   3         
+ 423   3               case 5:               //月加
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 8   
+
+ 424   3               sys.cMon=(sys.cMon%12)+1;
+ 425   3               break;
+ 426   3         
+ 427   3               case 6:
+ 428   3               sys.cYear++;          //年加
+ 429   3               sys.cYear=sys.cYear%100;
+ 430   3               break;
+ 431   3              }   
+ 432   2            sys.cWeek=GetWeekDay(sys.cYear,sys.cMon,sys.cDay);    //算出星期
+ 433   2            DecToBCD();       //转为BCD
+ 434   2            SetTime(sys);      //存入DS1302
+ 435   2         }
+ 436   1      
+ 437   1         if(Dec_Flag)                //减键按下
+ 438   1         {   
+ 439   2            Dec_Flag=FALSE;
+ 440   2            switch(State_Set)
+ 441   2            {
+ 442   3               case 0:
+ 443   3               
+ 444   3               break;
+ 445   3         
+ 446   3               case 1:     
+ 447   3               sys.cHour=(sys.cHour+23)%24;           //时减
+ 448   3               break;
+ 449   3         
+ 450   3               case 2:                           //分减
+ 451   3               sys.cMin=(sys.cMin+59)%60;
+ 452   3               break;
+ 453   3         
+ 454   3               case 3:                          //秒减
+ 455   3               sys.cSec=(sys.cSec+59)%60;
+ 456   3               break;
+ 457   3         
+ 458   3               case 4:                          //天减
+ 459   3               sys.cDay=((sys.cDay+Mon2[YearFlag(sys.cYear)][sys.cMon]-1)%Mon2[YearFlag(sys.cYear)][sys.cMon]);         
+ 460   3               if(sys.cDay==0) sys.cDay=Mon2[YearFlag(sys.cYear)][sys.cMon];
+ 461   3               break;
+ 462   3         
+ 463   3               case 5:                          //月减
+ 464   3               sys.cMon=(sys.cMon+11)%12;
+ 465   3               if(sys.cMon==0) sys.cMon=12;
+ 466   3               break;
+ 467   3         
+ 468   3               case 6:                          //年减
+ 469   3               sys.cYear=(sys.cYear+99)%100;
+ 470   3               break;
+ 471   3              }   
+ 472   2            sys.cWeek=GetWeekDay(sys.cYear,sys.cMon,sys.cDay);        
+ 473   2            DecToBCD();
+ 474   2            SetTime(sys);  
+ 475   2         }
+ 476   1      
+ 477   1      
+ 478   1      
+ 479   1      }
+ 480          void  main()
+ 481          {
+ 482   1          SFR_Init();
+ 483   1          CAL_Init();
+ 484   1          GUI_Init();
+ 485   1          TR0=1;
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 9   
+
+ 486   1          TR1=1;
+ 487   1          while(1)    
+ 488   1          {
+ 489   2            GetTime(&sys);    //获得时间
+ 490   2            LCD_ShowTemp();      //显示温度
+ 491   2            LCD_ShowWNL();    //显示万年历
+ 492   2            Time_Set();         //时间设置
+ 493   2          } 
+ 494   1      }
+ 495          
+ 496          void timer0() interrupt  1     //控制温度采集
+ 497          {
+ 498   1         TH0= (-50000)/256;
+ 499   1         TL0= (-50000)%256;
+ 500   1         T0_Count++;
+ 501   1         if(T0_Count==20)
+ 502   1         {  
+ 503   2            Tmp_Count++;
+ 504   2            T0_Count=0;
+ 505   2         }
+ 506   1      
+ 507   1         if(Tmp_Count==33)
+ 508   1         {
+ 509   2            Tmp_Count=0;
+ 510   2            Tmp_Flag=TRUE;
+ 511   2         }
+ 512   1      }
+ 513          
+ 514          
+ 515          void timer1() interrupt  3     //按键扫描
+ 516          {
+ 517   1         TH1= (-10000)/256;
+ 518   1         TL1= (-10000)%256;
+ 519   1         keyinput();                // 设置
+ 520   1         if (keyvalue&0x10)
+ 521   1         {  
+ 522   2            State_Flag=TRUE;
+ 523   2            keyvalue &= 0xef;    //清键值，保证一直按下只执行一次按键动作。
+ 524   2         }  
+ 525   1      //精度键检测  //080616
+ 526   1         
+ 527   1         if (keyvalue&0x20 )           //加
+ 528   1         {  
+ 529   2            Inc_Flag=TRUE;
+ 530   2            keyvalue &= 0xdf;    //清键值，保证一直按下只执行一次按键动作。
+ 531   2         }  
+ 532   1         
+ 533   1      //蜂鸣器键检测  //080616
+ 534   1         if (keyvalue&0x40)            //减
+ 535   1         {  
+ 536   2            Dec_Flag=TRUE;
+ 537   2            keyvalue &= 0xbf;    //清键值，保证一直按下只执行一次按键动作。
+ 538   2         }
+ 539   1         
+ 540   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   5280    ----
+   CONSTANT SIZE    =   4276    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V8.02   MAIN                                                                  11/03/2010 22:45:22 PAGE 10  
+
+   DATA SIZE        =     30      46
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =     12      14
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  4 WARNING(S),  0 ERROR(S)

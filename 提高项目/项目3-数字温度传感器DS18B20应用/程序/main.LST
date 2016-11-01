@@ -1,0 +1,110 @@
+C51 COMPILER V9.55   MAIN                                                                  10/31/2016 04:47:47 PAGE 1   
+
+
+C51 COMPILER V9.55, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: H:\code\Microcomputer\software\keil5-MDK\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJE
+                    -CTEXTEND TABS(2)
+
+line level    source
+
+   1          /*********************************************************************/
+   2          //¶ÁÈ¡DS18B20ÎÂ¶È£¬Í¨¹ýÊýÂë¹ÜÏÔÊ¾£¬ÔÚÎÂ¶È³¬¹ý35¶ÈÊ±¼ÌµçÆ÷ÎüºÏ                                           
+   3          /*********************************************************************/
+   4          #include<reg51.h>
+   5          #include"18B20.c"   
+   6          #define uchar unsigned char 
+   7          #define uint unsigned int
+   8          
+   9          code  uchar seven_seg[] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
+  10          code uchar seven_bit[] = {0x20,0x10,0x08,0x04,0x02,0x01};
+  11          uchar cp;
+  12          uint temp1,temp2;
+  13          sbit led = P0^6;    
+  14          void timer0_init(void)   //³õÊ¼»¯
+  15          {
+  16   1        TMOD = 0x01;
+  17   1        TH0 = 0xec;
+  18   1        TL0 = 0x78;
+  19   1        TR0 = 1;
+  20   1        EA  = 1;
+  21   1        ET0 = 1;
+  22   1      }
+  23          /*****************************************************************************/
+  24          void timer0_isr(void) interrupt 1     //ÖÐ¶Ï
+  25          {
+  26   1        uchar j;
+  27   1        TR0 = 0;
+  28   1        EA = 0;
+  29   1        TH0 = 0xec;
+  30   1        TL0 = 0x78;
+  31   1        TR0 = 1;
+  32   1        EA = 1;
+  33   1        cp++;
+  34   1        if(cp >= 200)   //¸ÕºÃ1Ãë
+  35   1         {
+  36   2          cp = 0;
+  37   2          temp1 = Read_Temperature();//µÃµ½ÎÂ¶È
+  38   2          if((temp1 & 0x80) == 0x80) //Èç¹ûÎÂ¶ÈÎª¸ºÖµ
+  39   2          { 
+  40   3          
+  41   3            temp2 =0x7f & ~temp1  +  (0x0f & ~c) /15;  //ÕûÊý´¦Àí,ÐèÒª¼ÓÉÏÐ¡ÊýÀ´µÄ½èÎ»
+  42   3            c = 0x0f & ~c + 0x01;   //Ð¡Êý´¦Àí
+  43   3          }
+  44   2          else temp2 = temp1;//Èç¹ûÎÂ¶ÈÎªÕýÖµ£¬²»ÓÃ´¦Àí
+  45   2        }
+  46   1        P0 = seven_bit[j];
+  47   1        switch(j)
+  48   1        {
+  49   2          case 0:P0 |= 0x80;P2 = seven_seg[c * 10/16];P0 &= 0x7f;break;//ÏÔÊ¾Ð¡Êý
+  50   2          case 1:P0 |= 0x80;P2 = 0x80 | seven_seg[temp2 % 10];P0 &= 0x7f;break;//ÏÔÊ¾¸öÎ»²¢¼ÓÉÏÐ¡Êýµã
+  51   2          case 2:{  
+  52   3                    if((temp2 < 10) && (temp1 < 0x80))//Èç¹ûÎÂ¶ÈÐ¡ÓÚ10¶È£¬ÇÒÎªÕýÖµ£¬Ê®Î»0²»ÏÔÊ¾
+  53   3                    {
+  54   4                      P0 |= 0x80;       //´ò¿ªËø´æÆ÷
+C51 COMPILER V9.55   MAIN                                                                  10/31/2016 04:47:47 PAGE 2   
+
+  55   4                      P2  = 0x00;
+  56   4                      P0 &= 0x7f;       //¹Ø±ÕËø´æÆ÷
+  57   4                      break;
+  58   4                    }
+  59   3                    if((temp1 > 0x80) && (temp2 < 10)){P0 |= 0x80;P2 = 0x40;P0 &= 0x7f;break;}//Èç¹ûÎÂ¶ÈÐ¡ÓÚ10¶È£¬ÇÒÎª¸
+             -ºÖµ£¬Ê®Î»0²»ÏÔÊ¾£¬Ö»ÏÔÊ¾¡°-¡±
+  60   3                      P0 |= 0x80; P2 = seven_seg[temp2 / 10]; P0 &= 0x7f;break;//Èç¹ûÎÂ¶È´óÓÚ10¶È£¬10Î»Õý³£ÏÔÊ¾       
+  61   3                  }
+  62   2          case 3:{
+  63   3                if((temp1 > 0x80) && ((temp2 / 10) > 0))//Èç¹ûÎÂ¶ÈÎª¸ºÖµ£¬ÇÒÊ®Î»²»Îª0£¬°ÙÎ»ÏÔÊ¾¡°-¡±
+  64   3                P0 |= 0x80;P2 = 0x40;P0 &= 0x7f;
+  65   3                break;
+  66   3              }
+  67   2        }
+  68   1        j++;
+  69   1        if(j >= 3)
+  70   1        j=0;
+  71   1      }
+  72          void main(void)
+  73          {
+  74   1        timer0_init();
+  75   1        
+  76   1        while(1)
+  77   1        {
+  78   2          if(temp2 >= 35) 
+  79   2            led = 0;
+  80   2          else
+  81   2            led = 1;
+  82   2        }
+  83   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    628    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     10       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

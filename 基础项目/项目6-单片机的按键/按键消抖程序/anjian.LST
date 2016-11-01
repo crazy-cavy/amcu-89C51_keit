@@ -1,0 +1,72 @@
+C51 COMPILER V8.02   ANJIAN                                                                06/22/2010 08:41:14 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE ANJIAN
+OBJECT MODULE PLACED IN anjian.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE anjian.c BROWSE DEBUG OBJECTEXTEND TABS(3)
+
+line level    source
+
+   1          #include<reg51.h> 
+   2          #define uchar unsigned char
+   3          uchar code  seven_seg[10] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+   4          sbit key1 = P3^4;
+   5          sbit key2 = P3^5;
+   6          uchar key1_state,key2_state;       //按键按下的状态变量
+   7          void delay(uchar i)
+   8          {
+   9   1         while(i) i--; 
+  10   1      }
+  11          void key_scan(void)              //键盘扫描函数
+  12          {  
+  13   1         if(key1 == 0)                //如果按键按下
+  14   1         {  
+  15   2            delay(200);              //延时一段时间，消除键抖
+  16   2            while(key1 == 0);
+  17   2            key1_state = 1;           //再对按键检测，如果确实按下，按键状态变量为1
+  18   2         }
+  19   1         if(key2 == 0)
+  20   1         {  
+  21   2            delay(200);
+  22   2            while(key2 == 0)
+  23   2            key2_state = 1;
+  24   2         }
+  25   1      }
+  26          void main(void)
+  27          {  
+  28   1         char i;
+  29   1         while(1)
+  30   1         {
+  31   2            key_scan();                        //调用键盘扫描函数
+  32   2            if(key1_state == 1)                //判断键盘状态变量，如果为1，说明有按键按下
+  33   2            {
+  34   3               i++;                            //显示数据增加
+  35   3               key1_state = 0;                 //数据增加后，键盘状态变量清零
+  36   3               if(i>9) i = 0;                  //数据增加超过9后，回到0
+  37   3            }
+  38   2            if(key2_state == 1)
+  39   2            {  
+  40   3               i--;
+  41   3               key2_state = 0; 
+  42   3               if(i < 0) i = 9;
+  43   3            }
+  44   2            P0 = seven_seg[i];                  //显示键盘调整数据
+  45   2            P2 = 0xfe;                          //数码管SEG0显示
+  46   2         }
+  47   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    104    ----
+   CONSTANT SIZE    =     10    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+C51 COMPILER V8.02   ANJIAN                                                                06/22/2010 08:41:14 PAGE 2   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

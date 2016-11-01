@@ -1,0 +1,69 @@
+C51 COMPILER V8.02   ANJIAN                                                                11/02/2010 20:38:14 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE ANJIAN
+OBJECT MODULE PLACED IN anjian.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE anjian.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg51.h>
+   2          #define uchar unsigned char
+   3          #define uint unsigned int
+   4          code uchar key_scan[4] = {0xfe,0xfd,0xfb,0xf7};
+   5          code uchar key_value[16] = {0xee,0xde,0xbe,0x7e,
+   6                                                                            0xed,0xdd,0xbd,0x7d,
+   7                                                                            0xeb,0xdb,0xbb,0x7b,
+   8                                                                            0xe7,0xd7,0xb7,0x77,};
+   9          code seven_seg[] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+  10          uchar k = 88;
+  11          void delay(uint x)
+  12          {
+  13   1              while(x--);
+  14   1      }
+  15          void display(uchar x)
+  16          {
+  17   1              P0 = 0xff;                 //仿真时消隐
+  18   1              P0 = seven_seg[x % 10];
+  19   1              P2 = 0xfe;delay(1000);
+  20   1              P0 = 0xff;                     //仿真时消隐
+  21   1              P0 = seven_seg[x / 10];
+  22   1              P2 = 0xfd;delay(1000);
+  23   1      }
+  24          void main(void)
+  25          {
+  26   1              uchar i = 0,j;
+  27   1              while(1)
+  28   1              {
+  29   2                      P3 = key_scan[i];
+  30   2                      if(P3 != key_scan[i])
+  31   2                      {
+  32   3                              delay(200);
+  33   3                              for(j = 0;j <= 16;j++)
+  34   3                              {
+  35   4                                      if(P3 == key_value[j])
+  36   4                                      k = j;
+  37   4                              }
+  38   3                      }
+  39   2                      display(k);
+  40   2                      i++;
+  41   2                      if(i >= 4)
+  42   2                      i = 0;
+  43   2              }
+  44   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    135    ----
+   CONSTANT SIZE    =     40    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+C51 COMPILER V8.02   ANJIAN                                                                11/02/2010 20:38:14 PAGE 2   
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

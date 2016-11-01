@@ -1,0 +1,15 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+C:\Documents and Settings\Administrator\桌面\复件 单片机C语言程序项目设计21\项目12_IO口I2C总线器件应用\程序包\24C04应用.uv2
+Project File Date:  08/30/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling 24C04.c...
+linking...
+Program Size: data=10.0 xdata=0 code=310
+creating hex file from "111111"...
+"111111" - 0 Error(s), 0 Warning(s).

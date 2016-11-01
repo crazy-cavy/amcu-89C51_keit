@@ -1,0 +1,88 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        11/07/2010  19:24:25  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 外部中断.obj TO 外部中断
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  外部中断.obj (外部中断)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  外部中断 (外部中断)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+                    0008H     0018H                  *** GAP ***
+            BIT     0020H.0   0000H.1   UNIT         ?BI?外部中断
+                    0020H.1   0000H.7                *** GAP ***
+            IDATA   0021H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0003H     ABSOLUTE     
+            CODE    0006H     000EH     UNIT         ?PR?INT0_ISR?外部中断
+            CODE    0014H     000CH     UNIT         ?PR?MAIN?外部中断
+            CODE    0020H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   外部中断 (外部中断)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?外部中断
+
+
+
+SYMBOL TABLE OF MODULE:  外部中断 (外部中断)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        外部中断
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  B:00A8H.7       PUBLIC        EA
+  B:00B0H.2       PUBLIC        INT0
+  C:0014H         PUBLIC        main
+  C:0006H         PUBLIC        int0_isr
+  B:00A8H.0       PUBLIC        EX0
+BL51 BANKED LINKER/LOCATER V6.00                                                      11/07/2010  19:24:25  PAGE 2
+
+
+  B:0080H.0       PUBLIC        LED
+  B:00B8H.0       PUBLIC        PX0
+  B:0020H.0       PUBLIC        i
+  -------         PROC          INT0_ISR
+  C:0006H         LINE#         8
+  C:0008H         LINE#         11
+  C:000AH         LINE#         12
+  C:000EH         LINE#         13
+  C:0011H         LINE#         14
+  -------         ENDPROC       INT0_ISR
+  -------         PROC          MAIN
+  C:0014H         LINE#         15
+  C:0014H         LINE#         16
+  C:0014H         LINE#         17
+  C:0016H         LINE#         18
+  C:0018H         LINE#         19
+  C:001AH         LINE#         20
+  C:001CH         LINE#         21
+  C:001EH         LINE#         22
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        外部中断
+
+Program Size: data=9.1 xdata=0 code=44
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

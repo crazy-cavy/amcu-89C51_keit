@@ -1,0 +1,47 @@
+C51 COMPILER V8.02   外部中断                                                              11/07/2010 19:24:25 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 外部中断
+OBJECT MODULE PLACED IN 外部中断.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE 外部中断.c BROWSE DEBUG OBJECTEXTEND TABS(3)
+
+line level    source
+
+   1          /*****************************************************************************/
+   2          //按键key_int0与单片机的P3.2连接，当按下按键时，会触发外部中断。
+   3          //本程序利用按键控制LED闪烁
+   4          /*****************************************************************************/
+   5          #include<reg51.h>
+   6          sbit LED = P0^0;
+   7          bit i;
+   8          void int0_isr(void) interrupt 0           //INT0中断服务函数，INT0的中断号为0
+   9          {  
+  10   1         
+  11   1         i = ~i;                               //INT0中断1次，i值改变1次
+  12   1         LED = i;                              //INT0中断1次，LED工作状态变化1次
+  13   1         while(!INT0);                          //如果按键一直按，等待
+  14   1      }
+  15          void main(void)
+  16          {  
+  17   1         LED = 0;                              //芯片初始化时，LED灭
+  18   1         EA = 0;                               
+  19   1         EX0 = 1;                              //开启INT0中断
+  20   1         PX0 = 1;                              //INT0中断优先，可以省去
+  21   1         EA = 1;                               //开启总中断开关
+  22   1         while(1);                             //等待按键按下，中断发生
+  23   1      }
+  24          /*****************************************************************************/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     26    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

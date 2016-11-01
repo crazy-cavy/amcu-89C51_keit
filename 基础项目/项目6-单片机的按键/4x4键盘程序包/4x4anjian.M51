@@ -1,0 +1,135 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        11/02/2010  20:38:14  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE anjian.obj TO 4x4anjian
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  anjian.obj (ANJIAN)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  4x4anjian (ANJIAN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?ANJIAN
+            IDATA   0009H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     008CH     UNIT         ?C_C51STARTUP
+            CODE    088CH     0048H     UNIT         ?PR?_DISPLAY?ANJIAN
+            CODE    08D4H     0034H     UNIT         ?PR?MAIN?ANJIAN
+            CODE    0908H     0028H     UNIT         ?CO?ANJIAN
+            CODE    0930H     000BH     UNIT         ?PR?_DELAY?ANJIAN
+            CODE    093BH     0004H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   4x4anjian (ANJIAN)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?ANJIAN
+  +--> ?C_INITSEG
+
+?PR?MAIN?ANJIAN
+  +--> ?CO?ANJIAN
+  +--> ?PR?_DELAY?ANJIAN
+  +--> ?PR?_DISPLAY?ANJIAN
+
+?PR?_DISPLAY?ANJIAN
+  +--> ?CO?ANJIAN
+  +--> ?PR?_DELAY?ANJIAN
+
+
+
+SYMBOL TABLE OF MODULE:  4x4anjian (ANJIAN)
+BL51 BANKED LINKER/LOCATER V6.00                                                      11/02/2010  20:38:14  PAGE 2
+
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ANJIAN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:08D4H         PUBLIC        main
+  C:091CH         PUBLIC        seven_seg
+  C:090CH         PUBLIC        key_value
+  C:0908H         PUBLIC        key_scan
+  C:088CH         PUBLIC        _display
+  D:0008H         PUBLIC        k
+  C:0930H         PUBLIC        _delay
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        x
+  C:0930H         LINE#         11
+  C:0930H         LINE#         12
+  C:0930H         LINE#         13
+  C:093AH         LINE#         14
+  -------         ENDPROC       _DELAY
+  -------         PROC          _DISPLAY
+  D:0005H         SYMBOL        x
+  C:088CH         LINE#         15
+  C:088EH         LINE#         16
+  C:088EH         LINE#         17
+  C:0891H         LINE#         18
+  C:08A8H         LINE#         19
+  C:08B2H         LINE#         20
+  C:08B5H         LINE#         21
+  C:08CAH         LINE#         22
+  -------         ENDPROC       _DISPLAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0003H         SYMBOL        i
+  D:0007H         SYMBOL        j
+  -------         ENDDO         
+  C:08D4H         LINE#         24
+  C:08D4H         LINE#         25
+  C:08D4H         LINE#         26
+  C:08D6H         LINE#         27
+  C:08D6H         LINE#         28
+  C:08D6H         LINE#         29
+  C:08DDH         LINE#         30
+  C:08E1H         LINE#         31
+  C:08E1H         LINE#         32
+  C:08E8H         LINE#         33
+  C:08EAH         LINE#         34
+  C:08EAH         LINE#         35
+  C:08F2H         LINE#         36
+  C:08F4H         LINE#         37
+  C:08F8H         LINE#         38
+  C:08F8H         LINE#         39
+  C:08FDH         LINE#         40
+  C:08FEH         LINE#         41
+BL51 BANKED LINKER/LOCATER V6.00                                                      11/02/2010  20:38:14  PAGE 3
+
+
+  C:0904H         LINE#         42
+  C:0906H         LINE#         43
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ANJIAN
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 00B2H BYTE ( 8%) *
+******************************************************************************
+
+Program Size: data=10.0 xdata=0 code=322
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
